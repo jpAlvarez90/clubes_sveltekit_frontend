@@ -1,38 +1,55 @@
 <script>
-	import { PublicFunctions } from './../scripts/PublicFunctions.js';
-	
-	const doTest = async ()=>{
-		console.log((await PublicFunctions.doTest()))
-	}
+	import axiosapi from '../utils/axiosapi';
+	let user = {
+		email:'',
+        password: ''
+	};
 
+	const login = () => {
+		axiosapi.doPost("/auth/signin",user).then(({data})=>{
+			Swal.fire({
+				title: 'Bienvenido',
+				confirmButtonColor: '#0D6EFD',
+				icon: 'success'
+			});
+			localStorage.setItem('token', data.token);
+		}).catch((err)=>{
+			console.log(err);
+			Swal.fire({
+				title: 'Error',
+				text: '¡Correo y/o contraseña incorrectos!',
+				confirmButtonColor: '#0D6EFD',
+				icon: 'error'
+			})
+		})
+	}
 </script>
 
-
-<div class="container py-5">
-	<form>
-		<div class="mb-3">
-			<label for="email" class="form-label">Email</label>
-			<input
-				type="email"
-				class="form-control"
-				id="email"
-				aria-describedby="emailHelp"
-			/>
-			<div id="emailHelp" class="form-text">Nunca muestres tu email a alguien más</div>
-		</div>
-		<div class="mb-3">
-			<label for="password" class="form-label">Contraseña</label>
-			<input type="password" class="form-control" id="password" />
-		</div>
-		<div class="mb-3 form-check">
-			<input type="checkbox" class="form-check-input" id="checkbox" />
-			<label class="form-check-label" for="checkbox">Recordarme</label>
-		</div>
-        <div class="d-block">
-            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-            <a href="/registro" class="px-3 text-decoration-none text-muted">Registrarse</a>
-        </div>
-	</form>
-
-	<!--<button on:click="{()=>doTest()}">Click me!</button>-->
-</div>
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+      <div class="col-lg-7 text-center text-lg-start">
+        <h1 class="display-4 fw-bold lh-1 mb-3">Talleres UTEZ</h1>
+        <p class="col-lg-10 fs-4">Talleres deportivos y culturales.</p>
+      </div>
+      <div class="col-md-10 mx-auto col-lg-5">
+        <form class="p-4 p-md-5 border rounded-3 bg-light">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" bind:value="{user.email}">
+            <label for="floatingInput">Correo institucional</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" bind:value="{user.password}">
+            <label for="floatingPassword">Contraseña</label>
+          </div>
+          <div class="checkbox mb-3">
+            <!-- <label>
+              <input type="checkbox" value="remember-me"> Recordarme
+            </label> -->
+          </div>
+          <button on:click="{()=>{login()}}" class="w-100 btn btn-lg btn-primary" type="button">Iniciar sesión</button>
+          <hr class="my-4">
+          <small class="text-muted"></small>
+        </form>
+      </div>
+    </div>
+  </div>

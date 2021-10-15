@@ -1,3 +1,11 @@
+<script>
+	import { browser } from "$app/env";
+	let hasToken;
+	if (browser){
+		hasToken = localStorage.getItem("token");
+	}
+</script>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/">Talleres Utez</a>
@@ -17,33 +25,37 @@
 				<a class="nav-link" href="/avisos">Avisos</a>
 				<a class="nav-link" href="/talleres">Talleres</a>
 			</div>
-			<div class="navbar-nav">
-				<a class="nav-link" href="/login">Iniciar Sesion</a>
-			</div>
-			<ul class="navbar-nav">
-				<li class="nav-item dropdown">
-					<a
+			{#if hasToken}
+				<ul class="navbar-nav">
+					<li class="nav-item dropdown">
+						<a
 						class="nav-link dropdown-toggle"
 						id="navbarDarkDropdownMenuLink"
 						role="button"
-						data-bs-toggle="dropdown"
-						aria-expanded="false"
-					>
-						Administrador
-					</a>
-					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
-						<li><a class="dropdown-item" href="/admin/talleres/panel">Talleres</a></li>
-						<li><a class="dropdown-item" href="/admin/avisos/panel">Avisos</a></li>
-						<li><a class="dropdown-item" href="/admin/instructores/panel">Instructores</a></li>
-						<li><a class="dropdown-item" href="/admin/alumnos/panel">Alumnos</a></li>
-						<li><a class="dropdown-item" href="/admin/divisiones/panel">Divisiones Académicas</a></li>
-						<li><a class="dropdown-item" href="/admin/niveles/panel">Niveles Académicos</a></li>
-						<li><a class="dropdown-item" href="/admin/cuatrimestres/panel">Cuatrimestres</a></li>
-						<li><a class="dropdown-item" href="/admin/carreras/panel">Carreras</a></li>
-						<li><a class="dropdown-item" href="/admin/periodo/panel">Periodo</a></li>
-					</ul>
-				</li>
-			</ul>
+							data-bs-toggle="dropdown"
+							aria-expanded="false"
+							>
+							Administrador
+						</a>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
+							<li><a class="dropdown-item" href="/admin/talleres/panel">Talleres</a></li>
+							<li><a class="dropdown-item" href="/admin/avisos/panel">Avisos</a></li>
+							<li><a class="dropdown-item" href="/admin/instructores/panel">Instructores</a></li>
+							<li><a class="dropdown-item" href="/admin/alumnos/panel">Alumnos</a></li>
+							<li><a class="dropdown-item" href="/admin/divisiones/panel">Divisiones Académicas</a></li>
+							<li><a class="dropdown-item" href="/admin/niveles/panel">Niveles Académicos</a></li>
+							<li><a class="dropdown-item" href="/admin/cuatrimestres/panel">Cuatrimestres</a></li>
+							<li><a class="dropdown-item" href="/admin/carreras/panel">Carreras</a></li>
+							<li><a class="dropdown-item" href="/admin/periodo/panel">Periodo</a></li>
+						</ul>
+					</li>
+				</ul>
+			{:else}
+				<div class="navbar-nav">
+					<a class="nav-link" href="/login">Iniciar Sesion</a>
+				</div>
+			{/if}
 		</div>
 	</div>
 </nav>
+
