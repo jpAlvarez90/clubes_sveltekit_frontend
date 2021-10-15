@@ -1,5 +1,9 @@
+import axiosapi from "./../utils/axiosapi"
+
 export const AdminFunctions = {
-    doTest: async ()=>{
-        return "Hello world!"
+    getAcademicDivisionsActive: async ()=>{
+        return await axiosapi.doGet("/academic/division/get")
     }
+
+    
 }

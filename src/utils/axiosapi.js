@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'http://localhost:3001';
 const instancia = axios.create({
     baseURL: SERVER_URL,
     timeout: 5000
@@ -32,7 +32,7 @@ export default{
         return this.execute('GET',endPoint)
     },
     doPut(endPoint, object){ // response
-        return this.execute('PUT', endPoint + object.id, object)
+        return this.execute('PUT', endPoint, object)
     },
     doDelete(endPoint){ // response
         return this.execute('DELETE',endPoint)
