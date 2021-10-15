@@ -32,15 +32,15 @@
 						Administrador
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
-						<li><a class="dropdown-item" href="/talleres/panel">Talleres</a></li>
-						<li><a class="dropdown-item" href="/avisos/panel">Avisos</a></li>
-						<li><a class="dropdown-item" href="/instructores/panel">Instructores</a></li>
-						<li><a class="dropdown-item" href="/alumnos/panel">Alumnos</a></li>
-						<li><a class="dropdown-item" href="/divisiones/panel">Divisiones Académicas</a></li>
-						<li><a class="dropdown-item" href="/niveles/panel">Niveles Académicos</a></li>
-						<li><a class="dropdown-item" href="/cuatrimestres/panel">Cuatrimestres</a></li>
-						<li><a class="dropdown-item" href="/carreras/panel">Carreras</a></li>
-						<li><a class="dropdown-item" href="/periodo/panel">Periodo</a></li>
+						<li><a class="dropdown-item" href="/admin/talleres/panel">Talleres</a></li>
+						<li><a class="dropdown-item" href="/admin/avisos/panel">Avisos</a></li>
+						<li><a class="dropdown-item" href="/admin/instructores/panel">Instructores</a></li>
+						<li><a class="dropdown-item" href="/admin/alumnos/panel">Alumnos</a></li>
+						<li><a class="dropdown-item" href="/admin/divisiones/panel">Divisiones Académicas</a></li>
+						<li><a class="dropdown-item" href="/admin/niveles/panel">Niveles Académicos</a></li>
+						<li><a class="dropdown-item" href="/admin/cuatrimestres/panel">Cuatrimestres</a></li>
+						<li><a class="dropdown-item" href="/admin/carreras/panel">Carreras</a></li>
+						<li><a class="dropdown-item" href="/admin/periodo/panel">Periodo</a></li>
 					</ul>
 				</li>
 			</ul>
