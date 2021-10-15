@@ -34,5 +34,5 @@
         </div>
 	</form>
 
-	<button on:click="{()=>doTest()}">Click me!</button>
+	<!--<button on:click="{()=>doTest()}">Click me!</button>-->
 </div>
