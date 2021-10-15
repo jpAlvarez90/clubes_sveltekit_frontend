@@ -1,3 +1,13 @@
+<script>
+	import { PublicFunctions } from './../scripts/PublicFunctions.js';
+	
+	const doTest = async ()=>{
+		console.log((await PublicFunctions.doTest()))
+	}
+
+</script>
+
+
 <div class="container py-5">
 	<form>
 		<div class="mb-3">
@@ -23,4 +33,6 @@
             <a href="/registro" class="px-3 text-decoration-none text-muted">Registrarse</a>
         </div>
 	</form>
+
+	<button on:click="{()=>doTest()}">Click me!</button>
 </div>
