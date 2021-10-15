@@ -1,6 +1,22 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="/">Talleres Utez</a>
+<script>
+	//import logoUT from '$lib/assets/img/LOGO_UTEZ.png'
+	let logoUT = "../static/img/LOGO_BLANCO2016.png"
+	let logoDeportes = "../static/img/HALCÓN_BLANCO2016.png"
+</script>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-blue" >
+	<div class="container-fluid " >
+		<img alt="Logo universitario" width="70em;" src="{logoUT}"/>
+		
+		<div class="d-flex text-white ms-2" style="height: 3em;">
+			<div class="vr"></div>
+		</div>
+
+		<img alt="Logo de deportes" width="60em;" src="{logoDeportes}"/>
+
+		<a class="navbar-brand ms-2" href="/">
+			Talleres Utez
+		</a>
 		<button
 			class="navbar-toggler"
 			type="button"
@@ -12,18 +28,18 @@
 		>
 			<span class="navbar-toggler-icon" />
 		</button>
-		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+		<div class="collapse navbar-collapse " id="navbarNavAltMarkup">
 			<div class="navbar-nav me-auto mb-2 mb-lg-0">
-				<a class="nav-link" href="/avisos">Avisos</a>
-				<a class="nav-link" href="/talleres">Talleres</a>
+				<a class="nav-link " href="/avisos">Avisos</a>
+				<a class="nav-link " href="/talleres">Talleres</a>
 			</div>
 			<div class="navbar-nav">
-				<a class="nav-link" href="/login">Iniciar Sesion</a>
+				<a class="nav-link " href="/login">Iniciar Sesión</a>
 			</div>
-			<ul class="navbar-nav">
-				<li class="nav-item dropdown">
+			<ul class="navbar-nav  ">
+				<li class="nav-item dropdown ">
 					<a
-						class="nav-link dropdown-toggle"
+						class="nav-link dropdown-toggle "
 						id="navbarDarkDropdownMenuLink"
 						role="button"
 						data-bs-toggle="dropdown"
@@ -31,7 +47,7 @@
 					>
 						Administrador
 					</a>
-					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
+					<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-blue-2" aria-labelledby="navbarDarkDropdownMenuLink">
 						<li><a class="dropdown-item" href="/admin/talleres/panel">Talleres</a></li>
 						<li><a class="dropdown-item" href="/admin/avisos/panel">Avisos</a></li>
 						<li><a class="dropdown-item" href="/admin/instructores/panel">Instructores</a></li>
@@ -47,3 +63,22 @@
 		</div>
 	</div>
 </nav>
+
+<style>
+	.bg-blue{
+		background:#094670 !important;
+	}
+
+	.bg-blue-2{
+		background:#0A4F7D !important;
+		
+	}
+
+	.txt-white{
+		color:#eeeeee !important;
+	}
+
+	.txt-white:hover{
+		color:#fafafa !important;
+	}
+</style>
