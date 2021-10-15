@@ -2,28 +2,69 @@
 	import { onMount } from 'svelte';
 	import axiosapi from './../../../utils/axiosapi';
     
+    export let careers = [];
+    export let divisions = [];
     export let levels = [];
-	let newlevel = {
-		name:""
+	let newcareer = {
+		name:"",
+		acronym:"",
+        id_ac_di: 0,
+        id_ac_le: 0
 	};
-	let oldlevel = {
-		id:0,
-		name:""
+
+	let oldcareer = {
+		id: 0,
+		name: "",
+		acronym: "",
+        id_ac_di: 0,
+        id_ac_le: 0
 	};	
 
 
-	const clearLevel = ()=>{
-		newlevel = {name:""};	
+	const clearCareer = ()=>{
+		newcareer = {
+            name:"",
+            id_ac_di: 0,
+            id_ac_le: 0
+        };	
 	}
 
-	const clearOldLevel = ()=>{
-		oldlevel = {name:""};	
+	const clearOldCareer = ()=>{
+		oldcareer = {
+            id:0,
+            name:"",
+            id_ac_di: 0,
+            id_ac_le: 0
+        };		
 	}
+
+	const getDivisions = async ()=>{
+        axiosapi.doGet("/academic/division/get").then(res=>{
+            console.log(res.data);
+            divisions = res.data;
+            
+        }).catch((err)=>{
+            console.log(err);
+        })
+
+    }
 
 	const getLevels = async ()=>{
+        axiosapi.doGet("/academic/level/get").then(res=>{
+            console.log(res.data);
+            levels = res.data;
+            
+        }).catch((err)=>{
+            console.log(err);
+        })
 
-		axiosapi.doGet("/academic/level/get").then(res=>{
-			levels = res.data;
+    }
+
+	const getCareers = async ()=>{
+
+		axiosapi.doGet("/career/get").then(res=>{
+            console.log(res.data);
+			careers = res.data;
 			
 		}).catch((err)=>{
 			console.log(err);
@@ -32,10 +73,11 @@
 
 	}
 
-	const getLevel =  (id)=>{
+	const getCareer = (id)=>{
 		console.log(id)
-		axiosapi.doGet("/academic/level/get/"+id).then(res=>{		
-			oldlevel = res.data[0];
+		axiosapi.doGet("/career/get/"+id).then(res=>{	
+            console.log(res.data)	
+			oldcareer = res.data[0];
 			
 		}).catch((err)=>{
 			console.log(err);
@@ -43,11 +85,11 @@
 
 	}
 
-	const updateLevel = ()=>{
-		console.log(oldlevel)
-		let id = oldlevel.id
+	const updateCareer = ()=>{
+		console.log(oldcareer)
+		let id = oldcareer.id
 		console.log(id);
-		axiosapi.doPut("/academic/level/update/"+id,oldlevel).then(res=>{		
+		axiosapi.doPut("/career/update/"+id,oldcareer).then(res=>{		
 			console.log(res);
 			Swal.fire({
 				title: 'Actualizado',
@@ -55,28 +97,30 @@
 				confirmButtonColor: '#0D6EFD',
 				icon: 'success'
 			})
-			clearOldLevel()
-			getLevels()
+			clearOldCareer()
+			getCareers()
 		}).catch((err)=>{
 			console.log(err);
 		})
 	}
 
-	const createLevel = ()=>{
-		axiosapi.doPost("/academic/level/create",newlevel).then((res)=>{
+	const createCareer = ()=>{
+        console.log(newcareer);
+        
+		axiosapi.doPost("/career/create",newcareer).then((res)=>{
 			Swal.fire({
 				title: 'Creado',
 				text: '¡El registro se ha completado exitosamente!',
 				confirmButtonColor: '#0D6EFD',
 				icon: 'success'
 			})
-			getLevels()
+			getCareers()
 		}).catch((err)=>{
 			console.log(err);
 		})
 	}
 
-    const deleteLevel = (id)=>{
+    const deleteCareer = (id)=>{
         Swal.fire({
             title: '¿Está seguro que desea eliminar este registro?',
             //text: "¿Seguro que desea eliminar este registro?",
@@ -91,9 +135,9 @@
             if (result.isConfirmed) {
                 console.log(id)
 				
-				axiosapi.doDelete("/academic/level/delete/"+id).then((res)=>{
+				axiosapi.doDelete("/career/delete/"+id).then((res)=>{
 					console.log(res);
-					getLevels()
+					getCareers()
 					Swal.fire({
 						title: 'Eliminado',
 						text: 'El registro se ha eliminado exitosamente.',
@@ -136,9 +180,11 @@
 
 
 	onMount(async ()=>{
-		await getLevels().then(()=>{
+		await getCareers().then(()=>{
 			//document.getElementById('bind-datatable').click()
 		})
+        await getDivisions()
+        await getLevels()
 		
 		
 	});
@@ -148,7 +194,7 @@
 	<div style="background-color: #F8F9FA;" class="container-lg my-4 p-4 rounded border">
 		<div class="row mb-3">
 			<div class="col">
-				<h3>Niveles Académicos</h3>
+				<h3>Carreras</h3>
 			</div>
 			<div class="col">
 				<button
@@ -169,21 +215,27 @@
 						<thead>
 							<tr class="text-center">
 								<th>No.</th>
+								<th>Carrera</th>
+                                <th>Acrónimo</th>
+                                <th>División académica</th>
 								<th>Nivel académico</th>
 								<th>Opciones</th>
 							</tr>
 						</thead>
 						<tbody>
-                            {#each levels as d,i}
+                            {#each careers as c,i}
 							<tr>
 								<td>{i+1}</td>
-								<td>{d.name}</td>
+								<td>{c.name}</td>
+                                <td>{c.acronym}</td>
+                                <td>{c.d_acronym}</td>
+								<td>{c.l_name}</td>
 								<td class="text-center">
 									<div class="btn-group" role="group">
-										<button on:click="{()=>getLevel(d.id)}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
+										<button on:click="{()=>getCareer(c.id)}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
 											<i class="fas fa-eye" />
 										</button>
-										<button on:click="{()=>deleteLevel(d.id)}" type="button" class="btn btn-outline-danger">
+										<button on:click="{()=>deleteCareer(c.id)}" type="button" class="btn btn-outline-danger">
 											<i class="fas fa-trash-alt" />
 										</button>
 									</div>
@@ -202,26 +254,52 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol1">Nueva División Académica</h5>
+					<h5 class="modal-title" id="mol1">Nueva Carrera</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
 					<form>
-						<div class="row g-3">
+						<div class="row c-3">
 							<div class="col-12">
-								<label for="address" class="form-label">Nombre</label>
+								<label for="nombre" class="form-label">Nombre</label>
 								<input
-									bind:value="{newlevel.name}"
+                                    id="nombre"
+									bind:value="{newcareer.name}"
 									type="text"
 									class="form-control"
 								/>
 							</div>
+							<div class="col-12">
+								<label for="acronimo" class="form-label">Acrónimo</label>
+								<input
+                                    id="acronimo"
+									bind:value="{newcareer.acronym}"
+									type="text"
+									class="form-control"
+								/>
+							</div>
+                            <div class="col-6">
+								<label for="division" class="form-label">División Académica</label>
+								<select bind:value="{newcareer.id_ac_di}" id="division" class="form-control">
+                                    {#each divisions as d}
+                                        <option value="{d.id}" >{d.acronym}</option>     
+                                    {/each}
+                                </select>
+                            </div>
+                            <div class="col-6">
+								<label for="nivel" class="form-label">Nivel Académico</label>
+								<select bind:value="{newcareer.id_ac_le}" id="nivel" class="form-control">
+                                    {#each levels as level}
+                                        <option value="{level.id}" >{level.name}</option>     
+                                    {/each}
+                                </select>
+                            </div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button on:click="{()=>{clearLevel()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-					<button on:click="{()=>{createLevel();clearLevel()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+					<button on:click="{()=>{clearCareer()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+					<button on:click="{()=>{createCareer();clearCareer()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
 				</div>
 			</div>
 		</div>
@@ -232,26 +310,52 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol2">Editar División Académica</h5>
+					<h5 class="modal-title" id="mol2">Editar Grado Cuatrimestral</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
 					<form>
-						<div class="row g-3">
+						<div class="row c-3">
 							<div class="col-12">
-								<label for="address" class="form-label">Nombre</label>
+								<label for="nombreu" class="form-label">Nombre</label>
 								<input
-									bind:value="{oldlevel.name}"
+                                    id="nombreu"
+									bind:value="{oldcareer.name}"
 									type="text"
 									class="form-control"
 								/>
 							</div>
+							<div class="col-12">
+								<label for="acronimou" class="form-label">Acrónimo</label>
+								<input
+                                    id="acronimou"
+									bind:value="{oldcareer.acronym}"
+									type="text"
+									class="form-control"
+								/>
+							</div>
+                            <div class="col-6">
+								<label for="divisionu" class="form-label">División Académica</label>
+								<select bind:value="{oldcareer.id_ac_di}" id="divisionu" class="form-control">
+                                    {#each divisions as d}
+                                        <option value="{d.id}" >{d.acronym}</option>     
+                                    {/each}
+                                </select>
+                            </div>
+                            <div class="col-6">
+								<label for="nivelu" class="form-label">Nivel Académico</label>
+								<select bind:value="{oldcareer.id_ac_le}" id="nivelu" class="form-control">
+                                    {#each levels as level}
+                                        <option value="{level.id}" >{level.name}</option>     
+                                    {/each}
+                                </select>
+                            </div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button on:click="{()=>{clearOldLevel()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-					<button on:click="{()=>{updateLevel()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+					<button on:click="{()=>{clearOldCareer()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+					<button on:click="{()=>{updateCareer()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
 				</div>
 			</div>
 		</div>
