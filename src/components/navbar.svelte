@@ -1,8 +1,8 @@
 <script>
 	import { browser } from "$app/env";
 	//import logoUT from '$lib/assets/img/LOGO_UTEZ.png'
-	let logoUT = "../static/img/LOGO_BLANCO2016.png"
-	let logoDeportes = "../static/img/HALCÓN_BLANCO2016.png"
+	let logoUT = "/img/LOGO_BLANCO2016.png"
+	let logoDeportes = "/img/HALCÓN_BLANCO2016.png"
 
 	let hasToken;
 	if (browser){
