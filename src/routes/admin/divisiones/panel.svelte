@@ -1,7 +1,17 @@
 <script>
-	import { onMount } from 'svelte';
-	import axiosapi from './../../../utils/axiosapi';
-    
+	import { onMount } from 'svelte'
+	import Notrecords from './../../../components/notrecords.svelte'
+	import axiosapi from './../../../utils/axiosapi'
+    import swal from './../../../utils/sweetalert2'
+
+	const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
+	const TITDELETED = "Eliminado"
+	const TXTDELETED = "El registro se ha eliminado exitosamente."
+	const TITCREATED = "Creado"
+	const TXTCREATED = "El registro se ha creado exitosamente."
+	const TITUPDATED = "Actualizado"
+	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+
     export let divisions = [];
 	let newdivision = {
 		name:"",
@@ -13,144 +23,70 @@
 		acronym:""
 	};	
 
-
-	const clearDivision = ()=>{
+	const clear = ()=>{
 		newdivision = {name:"",acronym:""};	
-	}
-
-	const clearOldDivision = ()=>{
 		olddivision = {name:"",acronym:""};	
 	}
 
 	const getDivisions = async ()=>{
-
 		axiosapi.doGet("/academic/division/get").then(res=>{
 			divisions = res.data;
-			
 		}).catch((err)=>{
-			console.log(err);
+			swal.err()
 		})
-
-
 	}
 
 	const getDivision =  (id)=>{
-		console.log(id)
 		axiosapi.doGet("/academic/division/get/"+id).then(res=>{		
 			olddivision = res.data[0];
-			
 		}).catch((err)=>{
-			console.log(err);
+			swal.err()
 		})
-
 	}
 
 	const updateDivision = ()=>{
-		console.log(olddivision)
-		let id = olddivision.id
-		console.log(id);
-		axiosapi.doPut("/academic/division/update/"+id,olddivision).then(res=>{		
-			console.log(res);
-			Swal.fire({
-				title: 'Actualizado',
-				text: '¡La actualización se ha completado exitosamente!',
-				confirmButtonColor: '#0D6EFD',
-				icon: 'success'
-			})
-			clearOldDivision()
+		axiosapi.doPut("/academic/division/update/"+olddivision.id,olddivision).then(res=>{		
+			swal.con('success',TITUPDATED,TXTUPDATED)
 			getDivisions()
 		}).catch((err)=>{
-			console.log(err);
+			swal.err()
 		})
 	}
 
 	const createDivision = ()=>{
 		axiosapi.doPost("/academic/division/create",newdivision).then((res)=>{
-			Swal.fire({
-				title: 'Creado',
-				text: '¡El registro se ha completado exitosamente!',
-				confirmButtonColor: '#0D6EFD',
-				icon: 'success'
-			})
+			swal.con('success',TITCREATED,TXTCREATED)
 			getDivisions()
 		}).catch((err)=>{
-			console.log(err);
+			swal.err()
 		})
 	}
-
-    const deleteDivision = (id)=>{
-        Swal.fire({
-            title: '¿Está seguro que desea eliminar este registro?',
-            //text: "¿Seguro que desea eliminar este registro?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#0D6EFD',
-            confirmButtonText: 'Confirmar',
-            cancelButtonColor: '#6C757D',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                console.log(id)
-				
-				axiosapi.doDelete("/academic/division/delete/"+id).then((res)=>{
-					console.log(res);
-					getDivisions()
-					Swal.fire({
-						title: 'Eliminado',
-						text: 'El registro se ha eliminado exitosamente.',
-						confirmButtonColor: '#0D6EFD',
-						icon: 'success'
-					})
-				}).catch((err)=>{
-					console.log(err);
-				})
-
-
-            }
-        })
-    }
-
 	
-
-    const sweet = ()=>{
-        Swal.fire({
-            title: '¿Está seguro que desea eliminar este registro?',
-            //text: "¿Seguro que desea eliminar este registro?",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#0D6EFD',
-            confirmButtonText: 'Confirmar',
-            cancelButtonColor: '#6C757D',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Eliminado',
-                    text: 'El registro se ha eliminado exitosamente.',
-                    confirmButtonColor: '#0D6EFD',
-                    icon: 'success'
-                })
-            }
-        })
+    const deleteDivision = (id)=>{
+		swal.concan('question',TITQDELETE).then(result=>{
+			if(result.isConfirmed){
+				axiosapi.doDelete("/academic/division/delete/"+id).then((res)=>{
+					getDivisions()
+					swal.con('success',TITDELETED,TXTDELETED)
+				}).catch((err)=>{
+					swal.err()
+				})
+			}
+		})
     }
-
 
 	onMount(async ()=>{
 		await getDivisions().then(()=>{
 			//document.getElementById('bind-datatable').click()
 		})
-		
-		
-	});
+	})
 </script>
 
 <main>
 	<div style="background-color: #F8F9FA;" class="container-lg my-4 p-4 rounded border">
 		<div class="row mb-3">
 			<div class="col">
-				<h3>Divisiones Académicas</h3>
+				<h3><i class="fas fa-graduation-cap"></i> Divisiones Académicas</h3>
 			</div>
 			<div class="col">
 				<button
@@ -158,14 +94,17 @@
 					data-bs-toggle="modal"
 					data-bs-target="#mo1"
 				>
-					<span>Nuevo</span>
 					<i class="fas fa-plus-circle" />
+					<span>Nuevo</span>
 				</button>
 			</div>
 		</div>
 		<hr />
 		<div class="row mb-3">
 			<div class="col">
+				{#if divisions.length == 0}
+					<Notrecords />
+				{:else}
 				<div class="table-responsive my-2">
 					<table id="filter-table" class="table table-hover table-striped">
 						<thead>
@@ -185,7 +124,7 @@
 								<td class="text-center">
 									<div class="btn-group" role="group">
 										<button on:click="{()=>getDivision(d.id)}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
-											<i class="fas fa-eye" />
+											<i class="fas fa-edit"></i>
 										</button>
 										<button on:click="{()=>deleteDivision(d.id)}" type="button" class="btn btn-outline-danger">
 											<i class="fas fa-trash-alt" />
@@ -197,6 +136,8 @@
 						</tbody>
 					</table>
 				</div>
+				{/if}
+
 			</div>
 		</div>
 	</div>
@@ -206,25 +147,29 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol1">Nueva División Académica</h5>
+					<h5 class="modal-title" id="mol1">
+						<i class="fas fa-plus-circle" /> Nueva División Académica
+					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
 					<form>
 						<div class="row g-3">
 							<div class="col-12">
-								<label for="address" class="form-label">Nombre</label>
+								<label for="division" class="form-label">Nombre</label>
 								<input
 									bind:value="{newdivision.name}"
+									id="division"
 									type="text"
 									class="form-control"
 								/>
 							</div>
 
 							<div class="col-12">
-								<label for="address2" class="form-label">Siglas</label>
+								<label for="acronym" class="form-label">Siglas</label>
 								<input
 									bind:value="{newdivision.acronym}"
+									id="acronym"
 									type="text"
 									class="form-control"
 								/>
@@ -233,8 +178,8 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button on:click="{()=>{clearDivision()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-					<button on:click="{()=>{createDivision();clearDivision()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+					<button on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
+					<button on:click="{()=>{createDivision();clear()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="fas fa-save"></i> Guardar</button>
 				</div>
 			</div>
 		</div>
@@ -245,25 +190,29 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol2">Editar División Académica</h5>
+					<h5 class="modal-title" id="mol2">
+						<i class="fas fa-edit"></i> Editar División Académica
+					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
 					<form>
 						<div class="row g-3">
 							<div class="col-12">
-								<label for="address" class="form-label">Nombre</label>
+								<label for="divisionu" class="form-label">Nombre</label>
 								<input
 									bind:value="{olddivision.name}"
+									id="divisionu"
 									type="text"
 									class="form-control"
 								/>
 							</div>
 
 							<div class="col-12">
-								<label for="address2" class="form-label">Siglas</label>
+								<label for="acronymu" class="form-label">Siglas</label>
 								<input
 									bind:value="{olddivision.acronym}"
+									id="acronymu"
 									type="text"
 									class="form-control"
 								/>
@@ -272,8 +221,8 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button on:click="{()=>{clearOldDivision()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-					<button on:click="{()=>{updateDivision()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+					<button on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
+					<button on:click="{()=>{updateDivision();clear()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="fas fa-save"></i> Guardar</button>
 				</div>
 			</div>
 		</div>

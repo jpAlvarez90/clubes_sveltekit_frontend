@@ -202,7 +202,7 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol1">Nueva División Académica</h5>
+					<h5 class="modal-title" id="mol1">Nuevo Nivel Académico</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
@@ -232,7 +232,7 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="mol2">Editar División Académica</h5>
+					<h5 class="modal-title" id="mol2">Editar Nivel Académico</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
