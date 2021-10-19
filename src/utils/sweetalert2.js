@@ -1,13 +1,32 @@
 export default{
-    question(){
-        return{
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
+    concan(icon,title,text){
+        return Swal.fire({
+            icon,
+            title,
+            text,
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }
+            confirmButtonColor: '#0D6EFD',
+            confirmButtonText: 'Confirmar',
+            cancelButtonColor: '#6C757D',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        })
+    },
+    con(icon,title,text,){
+        return Swal.fire({
+            icon,
+            title,
+            text,
+            confirmButtonColor: '#0D6EFD'
+        })
+    },
+    err(){
+        return Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Ha ocurrido un problema en el servidor, intente más tarde.',
+            confirmButtonColor: '#0D6EFD'
+        })
     }
+
 }
