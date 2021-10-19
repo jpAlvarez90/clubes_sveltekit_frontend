@@ -1,5 +1,7 @@
 <script>
 	import Avisos from './avisos.svelte';
+
+
 </script>
 
 <div class="position-relative ">

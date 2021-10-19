@@ -50,18 +50,59 @@
 						data-bs-toggle="dropdown"
 						aria-expanded="false"
 					>
-						Administrador
+						<i class="fas fa-user-circle"></i> Administrador
 					</a>
 					<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-blue-2" aria-labelledby="navbarDarkDropdownMenuLink">
-						<li><a class="dropdown-item" href="/admin/talleres/panel">Talleres</a></li>
-						<li><a class="dropdown-item" href="/admin/avisos/panel">Avisos</a></li>
-						<li><a class="dropdown-item" href="/admin/instructores/panel">Instructores</a></li>
-						<li><a class="dropdown-item" href="/admin/alumnos/panel">Alumnos</a></li>
-						<li><a class="dropdown-item" href="/admin/divisiones/panel">Divisiones Académicas</a></li>
-						<li><a class="dropdown-item" href="/admin/niveles/panel">Niveles Académicos</a></li>
-						<li><a class="dropdown-item" href="/admin/cuatrimestres/panel">Cuatrimestres</a></li>
-						<li><a class="dropdown-item" href="/admin/carreras/panel">Carreras</a></li>
-						<li><a class="dropdown-item" href="/admin/periodo/panel">Periodo</a></li>
+						<li>
+							<a class="dropdown-item" href="/admin/talleres/panel">
+								<i class="fas fa-chalkboard"></i> Talleres
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/avisos/panel">
+								<i class="fas fa-newspaper"></i> Avisos
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/instructores/panel">
+								<i class="fas fa-user-tie"></i> Instructores
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/alumnos/panel">
+								<i class="fas fa-user-graduate"></i> Alumnos
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/divisiones/panel">
+								<i class="fas fa-graduation-cap"></i> Divisiones Académicas
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/niveles/panel">
+								<i class="fas fa-graduation-cap"></i> Niveles Académicos
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/cuatrimestres/panel">
+								<i class="fas fa-graduation-cap"></i> Cuatrimestres
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/carreras/panel">
+								<i class="fas fa-graduation-cap"></i> Carreras
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/periodo/panel">
+								<i class="fas fa-calendar-alt"></i> Periodo
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="/admin/periodo/panel">
+								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+							</a>
+						</li>
 					</ul>
 				</li>
 			</ul>
