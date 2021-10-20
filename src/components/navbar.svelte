@@ -1,5 +1,6 @@
 <script>
 	import { browser } from "$app/env";
+	import { goto } from '$app/navigation';
 	//import logoUT from '$lib/assets/img/LOGO_UTEZ.png'
 	let logoUT = "/img/LOGO_BLANCO2016.png"
 	let logoDeportes = "/img/HALCÓN_BLANCO2016.png"
@@ -7,6 +8,12 @@
 	let hasToken;
 	if (browser){
 		hasToken = localStorage.getItem("token");
+	}
+
+	const logout = () => {
+		localStorage.removeItem('token');
+		goto('/');
+		location.reload();
 	}
 </script>
 
@@ -99,7 +106,7 @@
 							</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="/admin/periodo/panel">
+							<a class="dropdown-item" on:click="{()=>{logout()}}" href="/">
 								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
 							</a>
 						</li>

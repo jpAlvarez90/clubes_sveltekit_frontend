@@ -9,7 +9,7 @@ const instancia = axios.create({
 export default{
     async execute(method, resource, data, config){
         return instancia({
-            method: method,
+            method,
             url: resource,
             data,
             headers: {

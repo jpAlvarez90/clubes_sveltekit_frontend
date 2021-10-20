@@ -1,5 +1,6 @@
 <script>
 	import axiosapi from '../utils/axiosapi';
+  import { goto } from '$app/navigation';
 	let user = {
 		email:'',
         password: ''
@@ -13,6 +14,8 @@
 				icon: 'success'
 			});
 			localStorage.setItem('token', data.token);
+      goto('/');
+      location.reload();
 		}).catch((err)=>{
 			console.log(err);
 			Swal.fire({
@@ -48,7 +51,10 @@
           </div>
           <button on:click="{()=>{login()}}" class="w-100 btn btn-lg btn-primary" type="button">Iniciar sesión</button>
           <hr class="my-4">
-          <small class="text-muted"></small>
+          <span class="text-center">
+            <small class="text-muted">No tengo cuenta</small>
+            <a class="text-muted" href="/signup"> Registrarme</a>
+          </span>
         </form>
       </div>
     </div>
