@@ -1,7 +1,20 @@
 <script>
+	import { browser } from "$app/env";
+	import { goto } from '$app/navigation';
 	//import logoUT from '$lib/assets/img/LOGO_UTEZ.png'
 	let logoUT = "/img/LOGO_BLANCO2016.png"
 	let logoDeportes = "/img/HALCÓN_BLANCO2016.png"
+
+	let hasToken;
+	if (browser){
+		hasToken = localStorage.getItem("token");
+	}
+
+	const logout = () => {
+		localStorage.removeItem('token');
+		goto('/');
+		location.reload();
+	}
 </script>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-blue" >
@@ -33,9 +46,8 @@
 				<a class="nav-link " href="/avisos">Avisos</a>
 				<a class="nav-link " href="/talleres">Talleres</a>
 			</div>
-			<div class="navbar-nav">
-				<a class="nav-link " href="/login"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
-			</div>
+			
+			{#if hasToken}
 			<ul class="navbar-nav  ">
 				<li class="nav-item dropdown ">
 					<a
@@ -94,13 +106,18 @@
 							</a>
 						</li>
 						<li>
-							<a class="dropdown-item" href="/admin/periodo/panel">
+							<a class="dropdown-item" on:click="{()=>{logout()}}" href="/">
 								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
 							</a>
 						</li>
 					</ul>
 				</li>
 			</ul>
+			{:else}
+			<div class="navbar-nav">
+				<a class="nav-link " href="/login">Iniciar Sesión</a>
+			</div>
+			{/if}
 		</div>
 	</div>
 </nav>
