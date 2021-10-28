@@ -8,14 +8,27 @@
 
 	const login = () => {
 		axiosapi.doPost("/auth/signin",user).then(({data})=>{
-			Swal.fire({
-				title: 'Bienvenido',
-				confirmButtonColor: '#0D6EFD',
-				icon: 'success'
-			});
-			localStorage.setItem('token', data.token);
-      goto('/');
-      location.reload();
+      if(data.token != null){
+        let user = {"idUser":data.id, "username": data.user};
+        Swal.fire({
+          title: 'Bienvenido',
+          confirmButtonColor: '#0D6EFD',
+          icon: 'success'
+        });
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('ROLE', data.ROLE);
+        localStorage.setItem('user', JSON.stringify(user));
+        goto('/');
+        location.reload();
+      }else{
+        Swal.fire({
+          title: 'Error',
+          text: '¡Correo y/o contraseña incorrectos!',
+          confirmButtonColor: '#0D6EFD',
+          icon: 'error'
+        });
+      }
+
 		}).catch((err)=>{
 			console.log(err);
 			Swal.fire({
@@ -23,7 +36,7 @@
 				text: '¡Correo y/o contraseña incorrectos!',
 				confirmButtonColor: '#0D6EFD',
 				icon: 'error'
-			})
+			});
 		})
 	}
 </script>
