@@ -8,21 +8,32 @@
     let userEdit = [];
     let notEditing = true;
 
+    const TITUPDATED = "Actualizado"
+	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+
+    let id = 0;
+    if (browser){
+        id = JSON.parse(localStorage.getItem('user')).idUser;
+    }
     const getAdminInfo = async () => {
-        let id = 0;
-        if (browser){
-            id = JSON.parse(localStorage.getItem('user')).idUser;
-        }
 		await axiosapi.doGet(`/admin/get/${id}`)
         .then(({data})=>{
 			user = data;
-		}).catch((err)=>{
+            userEdit = {...user};
+		}).catch(()=>{
 			swal.err()
 		})
 	}
 
     const saveUser = async () => {
-        console.log(JSON.stringify(user) == JSON.stringify(userEdit));
+        await axiosapi.doPut(`/admin/update/${id}`, userEdit)
+        .then(() => {
+            cancelEdit();
+            swal.con('success',TITUPDATED,TXTUPDATED);
+            getAdminInfo();
+		}).catch(()=>{
+			swal.err()
+		})
 	}
 
     const editInfo = () => {
@@ -33,6 +44,8 @@
 		notEditing = true;
         getAdminInfo()
 	}
+
+    $: sameInfo = JSON.stringify(user) == JSON.stringify(userEdit);
     
     onMount(async () => {
         await getAdminInfo();
@@ -78,7 +91,7 @@
                         <i class="fas fa-times-circle"/>
                         <span>Cancelar</span>
                     </button>
-                    <button class="btn btn-outline-success float-end rounded-pill align-middle mt-2" on:click="{()=>saveUser()}">
+                    <button class="btn btn-outline-success float-end rounded-pill align-middle mt-2" on:click="{()=>saveUser()}" disabled="{sameInfo}">
                         <i class="fas fa-save" />
                         <span>Guardar</span>
                     </button>
