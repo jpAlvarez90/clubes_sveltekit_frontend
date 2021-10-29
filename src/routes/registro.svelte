@@ -154,7 +154,7 @@
 	};
 
 	const verifyEmail = (valor) => {
-		let regex = /^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+		let regex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
 		let resp = regex.test(valor)
 
 		if(resp){
@@ -721,12 +721,12 @@
 									<option selected disabled value={divisionSelected}
 										>Selecciona tu división académica</option
 									>
-							{:else}
-								<option disabled>Selecciona tu división académica</option>
-							{/if}
-							{#each divisions as div}
-								<option value={div.id}>{div.acronym}</option>
-							{/each}
+								{:else}
+									<option disabled>Selecciona tu división académica</option>
+								{/if}
+								{#each divisions as div}
+									<option value={div.id}>{div.acronym}</option>
+								{/each}
 							{:else}
 								<option selected disabled value={divisionSelected}
 									>No hay divisiones académicas disponibles</option
