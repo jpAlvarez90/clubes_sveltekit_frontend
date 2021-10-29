@@ -147,30 +147,37 @@
 		let elementClass = "form-control"
 
 		elementName.value = ""
+		newinstructor.name = ""
 		elementName.className = `${elementClass}`
 		fbName = []
 
 		elementLastName.value = ""
+		newinstructor.first_last_name = ""
 		elementLastName.className = `${elementClass}`
 		fbLastName = []
 
 		elementSecondLastName.value = ""
+		newinstructor.second_last_name = ""
 		elementSecondLastName.className = `${elementClass}`
 		fbSecondLastName = []
 
 		elementEmail.value = ""
+		newinstructor.email = ""
 		elementEmail.className = `${elementClass}`
 		fbEmail = []
 
 		elementPersonalEmail.value = ""
+		newinstructor.personal_email = ""
 		elementPersonalEmail.className = `${elementClass}`
 		fbPersonalEmail = []
 
 		elementPhone.value = ""
+		newinstructor.phone = ""
 		elementPhone.className = `${elementClass}`
 		fbPhone = []
 
 		elementCellphone.value = ""
+		newinstructor.cellphone = ""
 		elementCellphone.className = `${elementClass}`
 		fbCellphone = []
 
@@ -199,7 +206,7 @@
 		target.className = `${elementClass} is-valid`
 
 		// Formato de nombre válido
-		let nameformat = /^([A-Z]{1}[a-zñáéíóú]+[\s]*)+$/
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
@@ -222,7 +229,7 @@
 		target.className = `${elementClass} is-valid`
 
 		// Formato de nombre válido
-		let nameformat = /^([A-Z]{1}[a-zñáéíóú]+[\s]*)+$/
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
@@ -245,7 +252,7 @@
 		target.className = `${elementClass} is-valid`
 
 		// Formato de nombre válido
-		let nameformat = /^([A-Z]{1}[a-zñáéíóú]+[\s]*)+$/
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
@@ -652,7 +659,7 @@
 				</div>
 				<div class="modal-footer">
 					<button bind:this="{closemodalcreate}" on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
-					<button on:click="{()=>{checkCreateValidation()}}" type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>				
+					<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>				
 				</div>
 			</div>
 			</form>
