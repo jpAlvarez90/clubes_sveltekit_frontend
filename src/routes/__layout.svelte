@@ -4,3 +4,9 @@
 
 <Navbar />
 <slot></slot>
+
+<style>
+    :global(.main-card){
+        background-color: #F8F9FA;
+    }
+</style>
