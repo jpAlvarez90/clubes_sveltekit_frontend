@@ -6,12 +6,16 @@
 	let logoDeportes = "/img/HALCÓN_BLANCO2016.png"
 
 	let hasToken;
+	let isAdmin;
 	if (browser){
 		hasToken = localStorage.getItem("token");
+		isAdmin = localStorage.getItem("ROLE");
 	}
 
 	const logout = () => {
 		localStorage.removeItem('token');
+		localStorage.removeItem('ROLE');
+		localStorage.removeItem('user');
 		goto('/');
 		location.reload();
 	}
@@ -47,7 +51,7 @@
 				<a class="nav-link " href="/talleres">Talleres</a>
 			</div>
 			
-			{#if hasToken}
+			{#if hasToken && isAdmin == 'ADMIN'}
 			<ul class="navbar-nav  ">
 				<li class="nav-item dropdown ">
 					<a
@@ -106,6 +110,11 @@
 							</a>
 						</li>
 						<li>
+							<a class="dropdown-item" href="/admin/perfil/admin">
+								<i class="fas fa-user"></i> Perfil
+							</a>
+						</li>
+						<li>
 							<a class="dropdown-item" on:click="{()=>{logout()}}" href="/">
 								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
 							</a>
@@ -115,7 +124,7 @@
 			</ul>
 			{:else}
 			<div class="navbar-nav">
-				<a class="nav-link " href="/login">Iniciar Sesión</a>
+				<a class="nav-link " href="/login"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
 			</div>
 			{/if}
 		</div>
@@ -130,13 +139,5 @@
 	.bg-blue-2{
 		background:#0A4F7D !important;
 		
-	}
-
-	.txt-white{
-		color:#eeeeee !important;
-	}
-
-	.txt-white:hover{
-		color:#fafafa !important;
 	}
 </style>
