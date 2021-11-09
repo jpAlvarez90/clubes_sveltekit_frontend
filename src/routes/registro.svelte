@@ -69,7 +69,7 @@
 	let divisionSelected = '';
 	let levelSelected = '';
 	let repeatPasswod = '';
-	let verifySchoolId = false
+	let verifySchoolId = true
 
 	const getLists = () => {
 		axiosapi
