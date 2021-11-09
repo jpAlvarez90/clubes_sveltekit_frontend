@@ -381,7 +381,7 @@
 </script>
 
 <main>
-	<div class="main-card container-lg my-4 p-4 rounded border">
+	<div class="main-card shadow container-lg my-4 p-4 rounded border">
 		<div class="row mb-3">
 			<div class="col">
 				<h3><i class="fas fa-user-tie"></i> Instructores</h3>
