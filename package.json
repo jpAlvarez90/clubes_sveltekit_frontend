@@ -22,6 +22,7 @@
     "axios": "^0.23.0",
     "datatables.net": "^1.11.3",
     "datatables.net-bs4": "^1.11.3",
+    "firebase": "^9.4.0",
     "jquery": "^3.6.0",
     "jsdom": "^18.0.0"
   }
