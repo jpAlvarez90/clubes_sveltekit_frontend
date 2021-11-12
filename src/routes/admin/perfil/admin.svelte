@@ -54,7 +54,7 @@
 
 </script>
 
-<div class="container rounded bg-white mt-4">
+<div class="main-card container-lg my-4 p-4 rounded border shadow">
     <div class="row">
         <div class="col-md-3 border-right">
             <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="my-3" width="150px" src="/img/HALCÓN_2016.png" alt="profile"><span class="font-weight-bold">{user.name} {user.first_last_name}</span><span class="text-black-50">{user.email}</span><span> </span></div>

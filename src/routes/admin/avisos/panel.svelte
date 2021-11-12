@@ -16,7 +16,7 @@
 	let btncreate = false
 	let btnupdate = false
     
-    let defaultimage = "https://eitrawmaterials.eu/wp-content/uploads/2019/05/Label-brochure-1.jpg"
+    let defaultimage = "https://sg.com.mx/sites/default/files/inline-images/LOGO_UTEZ%202016%20-%20300_0.jpg"
     
 
     let ads = {
