@@ -3,6 +3,8 @@
 	import Notrecords from './../../../components/notrecords.svelte'
 	import axiosapi from './../../../utils/axiosapi'
     import swal from './../../../utils/sweetalert2'
+    import {storage} from './../../../utils/firebase'
+    import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
 
     const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
 	const TITDELETED = "Eliminado"
@@ -11,6 +13,10 @@
 	const TXTCREATED = "El registro se ha creado exitosamente."
 	const TITUPDATED = "Actualizado"
 	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+	let btncreate = false
+	let btnupdate = false
+
+    let defaultimage = "https://sg.com.mx/sites/default/files/inline-images/LOGO_UTEZ%202016%20-%20300_0.jpg"
 
     let workshops = {
         search: '',
@@ -119,7 +125,19 @@
         })
     }
 
-    const createWorkshop = () => {
+    const createWorkshop = async () => {
+		let imageUrl = defaultimage
+		if(elementImage.files.length > 0 && 
+		elementImage.files[0]!=null && 
+		elementImage.files[0]!=undefined && 
+		elementImage.files[0]!=NaN
+		){
+			let reference = ref(storage,`/workshop/${Date.now()}`)
+			await uploadBytes(reference,elementImage.files[0])
+			imageUrl = await getDownloadURL(reference)
+		}
+		newWorkshop.image_url = imageUrl
+
         axiosapi.doPost('/workshop/create', newWorkshop).then(() =>{
             swal.con('success', TITCREATED, TXTCREATED)
             getWorkshops()
@@ -231,8 +249,6 @@
         feedbackImage = []
         target.className = `${classElement} is-valid`
 
-        console.log('entro aqui');
-
         if(target.files.length == 0 || value === "" || value === undefined || value === null){
 			isValid = false
 			target.className = `${classElement} is-invalid`
@@ -248,14 +264,16 @@
         return isValid
     }
 
-    const checkValidationC = () => {
+    const checkValidationC = async () => {
         let ok = true
         ok = validName(elementName) && ok
         ok = validType(elementType) && ok
         ok = validDescription(elementDescription) && ok
         ok = validImagen(elementImage) && ok
-        if(ok){
-            createWorkshop()
+        if(ok && !btncreate){
+            btncreate = true
+            await createWorkshop()
+            btncreate = false
             closemodalcreate.click()
         }
     }
@@ -303,7 +321,6 @@
         getType()
         listenerValidity()
     })
-
 </script>
 <main>
     <div class="main-card container-lg my-4 p-4 rounded border shadow">
@@ -352,7 +369,7 @@
                         </div>
                     </div>
                 </div>
-                {#if workshops.length == 0}
+                {#if workshops.rows.length == 0}
                     <Notrecords/>
                 {:else}
                     <div class="container">
@@ -360,7 +377,7 @@
                             {#each workshops.rows as w}
                                 <div class="col-md-6 col-lg-4 g-3 mb-3">
                                     <div class="card h-100">
-                                        <img src="https://sg.com.mx/sites/default/files/inline-images/LOGO_UTEZ%202016%20-%20300_0.jpg" alt="Taller" class="card-img-top">
+                                        <img src="{w.image_url}" alt="Taller" class="card-img-top">
                                         <div class="card-body">
                                             <h5 class="card-title text-uppercase">{w.name}</h5>
                                             <h6 class="card-subtitle mb-2 text-muted">{w.type}</h6>
@@ -539,8 +556,13 @@
                             class="btn btn-secondary" data-bs-dismiss="modal">
                                 <i class="fas fa-times"></i> Cancelar
                         </button>
-						<button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Guardar
+						<button disabled="{btncreate}" type="submit" class="btn btn-primary">
+							{#if btncreate}
+								<i class="fas fa-redo-alt fa-spin"></i>
+							{:else}
+								<i class="fas fa-save"></i>
+							{/if}
+                            Guardar
                         </button>
                     </div>
                 </form>

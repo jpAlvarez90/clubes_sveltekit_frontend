@@ -189,7 +189,7 @@
 </script>
 
 <main>
-	<div style="background-color: #F8F9FA;" class="container-lg my-4 p-4 rounded border">
+	<div class="main-card container-lg my-4 p-4 rounded border shadow">
 		<div class="row mb-3">
 			<div class="col">
 				<h3>Grados Cuatrimestrales</h3>
