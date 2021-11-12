@@ -3,7 +3,9 @@
 	import Notrecords from './../../../components/notrecords.svelte'
 	import axiosapi from './../../../utils/axiosapi'
     import swal from './../../../utils/sweetalert2'
-
+	import {storage} from './../../../utils/firebase'
+	import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
+	
 	const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
 	const TITDELETED = "Eliminado"
 	const TXTDELETED = "El registro se ha eliminado exitosamente."
@@ -11,15 +13,11 @@
 	const TXTCREATED = "El registro se ha creado exitosamente."
 	const TITUPDATED = "Actualizado"
 	const TXTUPDATED = "El registro se ha actualizado exitosamente."
-
-    let textCard = `
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe repellat, officiis sapiente provident nemo magni quam a debitis, itaque amet, est deserunt id earum ipsam fugit error reiciendis iusto facere? Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium facilis laudantium vel, reiciendis repellat veritatis voluptas recusandae expedita quos illo eaque ipsum adipisci, fuga qui tempore sit odit perspiciatis soluta!
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis quia vel quidem tempora suscipit, blanditiis iusto et aperiam minima cupiditate fugiat eveniet, nemo eius aspernatur numquam distinctio sed voluptates perferendis. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat sit ullam id sequi ipsa! Sint adipisci rerum commodi in hic itaque quaerat quidem, aliquam exercitationem ullam animi. Impedit, delectus maiores!
-    `
-    //let imagentest = "https://lh3.googleusercontent.com/proxy/3jpThkmFhL9BkojKUwmFzj-9DvGEfo7-c5BHOXus-K02AvM1NS-x0CHmIevpM7R-10OXGrLtB88fwZS0hEh6gARFn4rSN4JgEFc"
-    //let imagentest = "https://mdn.mozillademos.org/files/6457/mdn_logo_only_color.png"
-    //let imagentest = "https://eitrawmaterials.eu/wp-content/uploads/2019/05/Label-brochure-1.jpg"
-    let imagentest = "https://image.freepik.com/fotos-kostenlos/portraet-eines-jungen-studenten-der-gluecklich-ist-wieder-an-der-universitaet-zu-sein_23-2148586559.jpg"
+	let btncreate = false
+	let btnupdate = false
+    
+    let defaultimage = "https://eitrawmaterials.eu/wp-content/uploads/2019/05/Label-brochure-1.jpg"
+    
 
     let ads = {
 		search: "",
@@ -105,10 +103,18 @@
 		})
 	}
 
-	const updateAd = ()=>{
+	const updateAd = async ()=>{
 
-        // actualizar imagen
-
+		if(elementFileU.files.length > 0 && 
+		elementFileU.files[0]!=null && 
+		elementFileU.files[0]!=undefined && 
+		elementFileU.files[0]!=NaN
+		){
+			let reference = ref(storage,`/workshop/${Date.now()}`)
+			await uploadBytes(reference,elementFileU.files[0])
+			oldad.image_url = await getDownloadURL(reference)
+		}
+		
 		axiosapi.doPut("/ad/update/"+oldad.id,oldad).then(res=>{		
 			swal.con('success',TITUPDATED,TXTUPDATED)
 			getAds()
@@ -117,9 +123,18 @@
 		})
 	}
 
-	const createAd = ()=>{
-
-        // Se carga la imagen en firebase...
+	const createAd = async ()=>{
+		let imageUrl = defaultimage
+		if(elementFileC.files.length > 0 && 
+		elementFileC.files[0]!=null && 
+		elementFileC.files[0]!=undefined && 
+		elementFileC.files[0]!=NaN
+		){
+			let reference = ref(storage,`/workshop/${Date.now()}`)
+			await uploadBytes(reference,elementFileC.files[0])
+			imageUrl = await getDownloadURL(reference)
+		}
+		newad.image_url = imageUrl
 
 		axiosapi.doPost("/ad/create",newad).then((res)=>{
 			swal.con('success',TITCREATED,TXTCREATED)
@@ -142,24 +157,28 @@
 		})
     }
 
-	const checkCreateValidation = ()=>{
+	const checkCreateValidation = async ()=>{
 		let ok = true
 		ok = validTitleC(elementTitleC) && ok
 		ok = validDescriptionC(elementDescriptionC) && ok
         ok = validFileC(elementFileC) && ok
-		if(ok){
-			createAd()
+		if(ok && !btncreate){
+			btncreate = true
+			await createAd()
+			btncreate = false
 			closemodalcreate.click()
 		}
 	}
 
-	const checkUpdateValidation = ()=>{
+	const checkUpdateValidation = async ()=>{
 		let ok = true
 		ok = validTitleU(elementTitleU) && ok
 		ok = validDescriptionU(elementDescriptionU) && ok
         ok = validFileU(elementFileU) && ok
-		if(ok){
-		    updateAd()
+		if(ok && !btnupdate){
+			btnupdate = true
+		    await updateAd()
+			btnupdate = false
 			closemodalupdate.click()
 		}
 	}
@@ -269,7 +288,6 @@
             validated = false
 			target.className = `${elementClass} is-invalid`
 			fbFileC.push("La imagen pesada demasiado.")
-            console.log(target.files[0]);
         }
         
 		
@@ -536,7 +554,14 @@
 					</div>
 					<div class="modal-footer">
 						<button bind:this="{closemodalcreate}" on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
-						<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+						<button disabled="{btncreate}" type="submit" class="btn btn-primary">
+							{#if btncreate}
+								<i class="fas fa-redo-alt fa-spin"></i>
+							{:else}
+								<i class="fas fa-save"></i>
+							{/if}
+							Guardar
+						</button>
 					</div>
 				</form>
 			</div>
@@ -624,11 +649,17 @@
                                 </div>
                             </div>
                         </div>
-
 					</div>
 					<div class="modal-footer">
 						<button on:click="{()=>{clear()}}" bind:this="{closemodalupdate}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
-						<button type="submit" class="btn btn-primary" ><i class="fas fa-save"></i> Guardar</button>
+						<button disabled="{btnupdate}" type="submit" class="btn btn-primary" >
+							{#if btnupdate}
+								<i class="fas fa-redo-alt fa-spin"></i>
+							{:else}
+								<i class="fas fa-save"></i>
+							{/if}
+							Guardar
+						</button>
 					</div>
 				</form>
 			</div>
