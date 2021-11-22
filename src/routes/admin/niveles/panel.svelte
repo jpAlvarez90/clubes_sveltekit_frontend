@@ -37,7 +37,7 @@
 
 	const getLevels = ()=>{
 		axiosapi.doGet("/academic/level/get").then(res=>{
-			levels.rows = res.data;
+			levels = res.data;
 			searched = false
 		}).catch((err)=>{
 			swal.err()
@@ -45,43 +45,42 @@
 	}
 
 	const getLevelsBySearch = ()=>{
-		// searching = true
-		// let endpoint = `/academic/level/get`
-		// if(levels.search != undefined && levels.search != ""){
-		// 	endpoint = `/academic/level/get?search=${levels.search}`
-		// 	searched = true
-		// 	wordSearched = levels.search
-		// }else{
-		// 	endpoint = `/academic/level/get`
-		// 	searched = false
-		// }
-		// axiosapi.doGet(endpoint).then(res=>{
-		// 	levels = res.data;
-		// }).catch((err)=>{
-		// 	swal.err()
-		// }).finally(()=>{
-		// 	searching = false
-		// })
+		searching = true
+		let endpoint = `/academic/level/get`
+		if(levels.search != undefined && levels.search != ""){
+			endpoint = `/academic/level/get?search=${levels.search}`
+			searched = true
+			wordSearched = levels.search
+		}else{
+			searched = false
+		}
+		axiosapi.doGet(endpoint).then(res=>{
+			levels = res.data;
+		}).catch((err)=>{
+			swal.err()
+		}).finally(()=>{
+			searching = false
+		})
 	}
 
 	const getLevelsByPage = (page)=>{
-		// let endpoint = `/academic/level/get?page=${page}`
-		// if(searched){
-		// 	endpoint += `&search=${wordSearched}`
-		// }
-		// axiosapi.doGet(endpoint).then(res=>{
-		// 	divisions = res.data;
-		// }).catch((err)=>{
-		// 	swal.err()
-		// })
+		let endpoint = `/academic/level/get?page=${page}`
+		if(searched){
+			endpoint += `&search=${wordSearched}`
+		}
+		axiosapi.doGet(endpoint).then(res=>{
+			levels = res.data;
+		}).catch((err)=>{
+			swal.err()
+		})
 	}
 
 	const getLevelsByNextPage = ()=>{
-		getLevelsByPage(divisions.page+1)
+		getLevelsByPage(levels.page+1)
 	}
 
 	const getLevelsByPreviousPage = ()=>{
-		getLevelsByPage(divisions.page-1)
+		getLevelsByPage(levels.page-1)
 	}
 
 	const getLevel = (id)=>{
@@ -263,7 +262,6 @@
 				{#if levels.rows.length == 0}
 					<Notrecords />
 				{:else}
-
 				<div class="table-responsive my-2">
 					<table id="filter-table" class="table table-hover table-striped">
 						<caption>
@@ -302,23 +300,27 @@
 					<ul class="pagination justify-content-end">
 						{#if levels.page === 1}
 							<li class="page-item disabled">
-								<a class="page-link">Anterior</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="">Anterior</a>
 							</li>							
 						{:else}
 							<li class="page-item">
-								<a on:click="{()=>getLevelsByPreviousPage()}" class="page-link" href="#">Anterior</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a on:click="{()=>getLevelsByPreviousPage()}" class="page-link" href="">Anterior</a>
 							</li>
 						{/if}
 						{#each Array.from({ length: levels.totalPages }, (_, i) => 1 + (i * 1)) as item}
 							{#if levels.page == item}
 								<li class="page-item active" aria-current="page">
-									<a class="page-link" href="#">{item}</a>
+									<!-- svelte-ignore a11y-invalid-attribute -->
+									<a class="page-link" href="">{item}</a>
 								</li>	
 							{:else}
 								<li class="page-item" aria-current="page">
+									<!-- svelte-ignore a11y-invalid-attribute -->
 									<a class="page-link" 
 									on:click="{()=>getLevelsByPage(item)}" 
-									href="#"
+									href=""
 									>{item}</a>
 								</li>	
 							{/if}
@@ -326,11 +328,13 @@
 						{/each}
 						{#if levels.page === levels.totalPages}
 							<li class="page-item disabled">
-								<a class="page-link">Siguiente</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="">Siguiente</a>
 							</li>							
 						{:else}
 							<li class="page-item">
-								<a on:click="{()=>getLevelsByNextPage()}" class="page-link" href="#">Siguiente</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a on:click="{()=>getLevelsByNextPage()}" class="page-link" href="">Siguiente</a>
 							</li>
 						{/if}
 					</ul>
@@ -352,29 +356,27 @@
 						<button type="button" on:click="{()=>{clear()}}" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 					</div>
 					<div class="modal-body">
-						
-							<div class="row g-3">
-								<div class="col-12">
-									<label for="level" class="form-label">
-										<i class="fas fa-graduation-cap"></i> Nombre
-									</label>
-									<input
-										bind:this="{elementNameC}"
-										bind:value="{newlevel.name}"
-										id="level"
-										type="text"
-										class="form-control"
-										autocomplete="off"
-										placeholder="Ingrese el nombre del nivel académico"
-									/>
-									{#each fbNameC as item}
-										<div class="invalid-feedback">
-											{item}
-										</div>
-									{/each}
-								</div>
+						<div class="row g-3">
+							<div class="col-12">
+								<label for="level" class="form-label">
+									<i class="fas fa-graduation-cap"></i> Nombre
+								</label>
+								<input
+									bind:this="{elementNameC}"
+									bind:value="{newlevel.name}"
+									id="level"
+									type="text"
+									class="form-control"
+									autocomplete="off"
+									placeholder="Ingrese el nombre del nivel académico"
+								/>
+								{#each fbNameC as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
 							</div>
-						
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button bind:this="{closemodalcreate}" on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
