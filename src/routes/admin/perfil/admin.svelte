@@ -7,6 +7,10 @@
     let user = [];
     let userEdit = [];
     let notEditing = true;
+    let isPwdReseting = false;
+    let password = "";
+    let password_repeat = "";
+    let password_match = true;
 
     const TITUPDATED = "Actualizado"
 	const TXTUPDATED = "El registro se ha actualizado exitosamente."
@@ -38,14 +42,34 @@
 
     const editInfo = () => {
 		notEditing = false;
+        isPwdReseting = false;
+	}
+    
+    const editPwd = () => {
+		isPwdReseting = true;
+        notEditing = true;
+        getAdminInfo();
+	}
+    
+    const cancelPwd = () => {
+		isPwdReseting = false;
+        notEditing = true;
 	}
 
     const cancelEdit = () => {
 		notEditing = true;
-        getAdminInfo()
+        getAdminInfo();
 	}
 
     $: sameInfo = JSON.stringify(user) == JSON.stringify(userEdit);
+
+    $: if (password === password_repeat && password !== '') {
+        password_match = false;
+    }
+
+    $: if (password !== password_repeat || password == '') {
+        password_match = true;
+    }
     
     onMount(async () => {
         await getAdminInfo();
@@ -73,8 +97,46 @@
                     <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-envelope"></i> Correo institucional</label><input type="text" class="form-control" bind:value={userEdit.email} disabled="{notEditing}"></div>
                     <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-suitcase"></i> Puesto</label><input type="text" class="form-control" bind:value={userEdit.employment} disabled="{notEditing}"></div>
                     <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-phone"></i> Teléfono</label><input type="text" class="form-control" bind:value={userEdit.phone} disabled="{notEditing}"></div>
-                    <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-phone"></i> Teléfono celular</label><input type="text" class="form-control" bind:value={userEdit.cellphone} disabled="{notEditing}"></div>
+                    <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-mobile"></i> Teléfono celular</label><input type="text" class="form-control" bind:value={userEdit.cellphone} disabled="{notEditing}"></div>
                     <div class="col-md-12 mb-2"><label class="labels" for=""><i class="fas fa-envelope"></i> Correo personal</label><input type="text" class="form-control" bind:value={userEdit.personal_email} disabled="{notEditing}"></div>
+                </div>
+                <hr>
+                <div class="row mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Contraseña</h4>
+                        {#if isPwdReseting}
+                            <button class="btn btn-outline-secondary float-end rounded-pill align-middle" on:click="{()=>cancelPwd()}">
+                                <i class="fas fa-times-circle"/>
+                                <span>Cancelar</span>
+                            </button>
+                        {:else}
+                            <button class="btn btn-outline-primary float-end rounded-pill align-middle" on:click="{()=>editPwd()}">
+                                <i class="fas fa-key" />
+                                <span>Cambiar contraseña</span>
+                            </button>
+                        {/if}
+                    </div>
+                    
+                    <span class="{!isPwdReseting ? 'd-none' : ''}">
+                        <div class="col-md-12 mb-2"><label class="labels" for="">
+                            <i class="fas fa-key"></i> Contraseña</label>
+                            <input type="password" class="form-control" bind:value={password} disabled="{!isPwdReseting}">
+                            <i class="fas fa-eye ojito"></i>
+                        </div>
+                        <div class="col-md-12 mb-2"><label class="labels" for="">
+                            <i class="fas fa-key"></i> Repetir contraseña</label>
+                            <input type="password" class="form-control" bind:value={password_repeat} disabled="{!isPwdReseting}">
+                            <i class="fas fa-eye ojito"></i>
+                        </div>
+                    </span>
+                    <div class="d-flex justify-content-end mt-3">
+                        {#if isPwdReseting}
+                            <button class="btn btn-outline-success justify-content-end rounded-pill align-middle" on:click="{()=>saveUser()}" disabled={password_match}>
+                                <i class="fas fa-save" />
+                                <span>Guardar</span>
+                            </button>
+                        {/if}
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,5 +170,18 @@
 
 .form-control:focus {
     box-shadow: none;
+}
+
+i {
+    font-size: smaller;
+}
+
+.ojito {
+    float: right;
+    margin-top: -25px;
+    margin-right: 20px;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
 }
 </style>

@@ -30,12 +30,21 @@
 	const signup = () => {
 		axiosapi.doPost("/auth/signup",user).then(({data})=>{
 			if(!data.token){
-        Swal.fire({
-          title: 'Error',
-          text: '¡Ocurrió un error al registrar administrador!',
-          confirmButtonColor: '#0D6EFD',
-          icon: 'error'
-        });
+        if (data.status == 0) {
+          Swal.fire({
+            title: 'Error',
+            text: '¡Usuario administrador ya existente!',
+            confirmButtonColor: '#0D6EFD',
+            icon: 'error'
+          });
+        }else{
+          Swal.fire({
+            title: 'Error',
+            text: '¡Ocurrió un error al registrar administrador!',
+            confirmButtonColor: '#0D6EFD',
+            icon: 'error'
+          });
+        }
       }else{
         Swal.fire({
         	title: 'Bienvenido',
@@ -46,8 +55,7 @@
         goto('/');
         location.reload();
       }
-		}).catch((err)=>{
-			console.log(err);
+		}).catch(()=>{
 			Swal.fire({
 				title: 'Error',
 				text: '¡Ocurrió un error al registrar administrador!',
