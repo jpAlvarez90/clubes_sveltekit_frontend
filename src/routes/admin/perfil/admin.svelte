@@ -3,6 +3,7 @@
     import swal from './../../../utils/sweetalert2'
     import { browser } from "$app/env";
     import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
     let user = [];
     let userEdit = [];
@@ -11,14 +12,19 @@
     let password = "";
     let password_repeat = "";
     let password_match = true;
+    let see_psw = false;
 
     const TITUPDATED = "Actualizado"
 	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+    
+    const TITPSWUPDATED = "Actualizado"
+	const TXTPSWUPDATED = "La contraseña se ha actualizado exitosamente."
 
     let id = 0;
     if (browser){
         id = JSON.parse(localStorage.getItem('user')).idUser;
     }
+
     const getAdminInfo = async () => {
 		await axiosapi.doGet(`/admin/get/${id}`)
         .then(({data})=>{
@@ -35,6 +41,18 @@
             cancelEdit();
             swal.con('success',TITUPDATED,TXTUPDATED);
             getAdminInfo();
+		}).catch(()=>{
+			swal.err()
+		})
+	}
+    
+    const updatePwd = async () => {
+        await axiosapi.doPut(`/admin/update-psd/${id}`, {
+            password
+        }).then((response) => {
+            console.log(response);
+            swal.con('success', TITPSWUPDATED, TXTPSWUPDATED);
+            logout();
 		}).catch(()=>{
 			swal.err()
 		})
@@ -59,6 +77,18 @@
     const cancelEdit = () => {
 		notEditing = true;
         getAdminInfo();
+	}
+    
+    const showIcon = () => {
+		see_psw = !see_psw;
+	}
+
+    const logout = () => {
+		goto('/');
+		location.reload();
+		localStorage.removeItem('token');
+		localStorage.removeItem('ROLE');
+		localStorage.removeItem('user');
 	}
 
     $: sameInfo = JSON.stringify(user) == JSON.stringify(userEdit);
@@ -120,18 +150,22 @@
                     <span class="{!isPwdReseting ? 'd-none' : ''}">
                         <div class="col-md-12 mb-2"><label class="labels" for="">
                             <i class="fas fa-key"></i> Contraseña</label>
-                            <input type="password" class="form-control" bind:value={password} disabled="{!isPwdReseting}">
-                            <i class="fas fa-eye ojito"></i>
+                            <input type="text" class="form-control {see_psw ? '' : 'd-none'}" bind:value={password} disabled="{!isPwdReseting}">
+                            <input type="password" class="form-control {see_psw ? 'd-none' : ''}" bind:value={password} disabled="{!isPwdReseting}">
+                            <i class="fas fa-eye ojito {!see_psw ? '' : 'd-none'}" on:click="{()=>showIcon()}"></i>
+                            <i class="fas fa-eye-slash ojito {see_psw ? '' : 'd-none'}" on:click="{()=>showIcon()}"></i>
                         </div>
                         <div class="col-md-12 mb-2"><label class="labels" for="">
                             <i class="fas fa-key"></i> Repetir contraseña</label>
-                            <input type="password" class="form-control" bind:value={password_repeat} disabled="{!isPwdReseting}">
-                            <i class="fas fa-eye ojito"></i>
+                            <input type="text" class="form-control {see_psw ? '' : 'd-none'}" bind:value={password_repeat} disabled="{!isPwdReseting}">
+                            <input type="password" class="form-control {see_psw ? 'd-none' : ''}" bind:value={password_repeat} disabled="{!isPwdReseting}">
+                            <i class="fas fa-eye ojito {!see_psw ? '' : 'd-none'}" on:click="{()=>showIcon()}"></i>
+                            <i class="fas fa-eye-slash ojito {see_psw ? '' : 'd-none'}" on:click="{()=>showIcon()}"></i>
                         </div>
                     </span>
                     <div class="d-flex justify-content-end mt-3">
                         {#if isPwdReseting}
-                            <button class="btn btn-outline-success justify-content-end rounded-pill align-middle" on:click="{()=>saveUser()}" disabled={password_match}>
+                            <button class="btn btn-outline-success justify-content-end rounded-pill align-middle" on:click="{()=>updatePwd()}" disabled={password_match}>
                                 <i class="fas fa-save" />
                                 <span>Guardar</span>
                             </button>

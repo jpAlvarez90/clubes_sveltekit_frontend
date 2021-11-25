@@ -69,7 +69,11 @@
 	let divisionSelected = '';
 	let levelSelected = '';
 	let repeatPasswod = '';
+	let verifySchoolId = true
+
+	const getLists = () => {
 		axiosapi
+			.doGet('http://localhost:3001/grade/get')
 			.then((res) => {
 				grades = res.data;
 			})
