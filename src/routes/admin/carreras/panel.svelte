@@ -466,7 +466,7 @@
 </script>
 
 <main>
-	<div class="container-lg my-4 p-4 rounded border main-card">
+	<div class="main-card container-lg my-4 p-4 rounded border shadow">
 		<div class="row mb-3">
 			<div class="col">
 				<h3><i class="fas fa-graduation-cap"></i> Carreras</h3>

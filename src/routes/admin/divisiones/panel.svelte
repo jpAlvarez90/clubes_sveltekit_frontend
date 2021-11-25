@@ -16,7 +16,7 @@
 		search: "",
 		page: 1,
 		totalRecords: 0,
-		totalPages: 0,
+		totalPages: 1,
 		limit: 0,
 		offset: 0,
 		rows: []
@@ -32,14 +32,11 @@
 		id:0,
 		name:"",
 		acronym:""
-	};	
+	};
+	let closemodalcreate
+	let closemodalupdate
 
-	const clear = ()=>{
-		newdivision = {name:"",acronym:""};	
-		olddivision = {name:"",acronym:""};	
-	}
-
-	const getDivisions = async ()=>{
+	const getDivisions = ()=>{
 		axiosapi.doGet("/academic/division/test/get").then(res=>{
 			divisions = res.data;
 			searched = false
@@ -48,7 +45,7 @@
 		})
 	}
 
-	const getDivisionsBySearch = async ()=>{
+	const getDivisionsBySearch = ()=>{
 		searching = true
 		let endpoint = `/academic/division/test/get`
 		if(divisions.search != undefined && divisions.search != ""){
@@ -68,12 +65,11 @@
 		})
 	}
 
-	const getDivisionsByPage = async (page)=>{
+	const getDivisionsByPage = (page)=>{
 		let endpoint = `/academic/division/test/get?page=${page}`
 		if(searched){
 			endpoint += `&search=${wordSearched}`
 		}
-		console.log("ENDP: ",endpoint);
 		axiosapi.doGet(endpoint).then(res=>{
 			divisions = res.data;
 		}).catch((err)=>{
@@ -81,18 +77,15 @@
 		})
 	}
 
-	const getDivisionsByNextPage = async ()=>{
-		let page = divisions.page+1
-		getDivisionsByPage(page)
+	const getDivisionsByNextPage = ()=>{
+		getDivisionsByPage(divisions.page+1)
 	}
 
-	const getDivisionsByPreviousPage = async ()=>{
-		let page = divisions.page-1
-		getDivisionsByPage(page)
+	const getDivisionsByPreviousPage = ()=>{
+		getDivisionsByPage(divisions.page-1)
 	}
 
-	const getDivision =  (id)=>{
-		console.log("OBTENIENDO DIV: ",id);
+	const getDivision = (id)=>{
 		axiosapi.doGet("/academic/division/get/"+id).then(res=>{		
 			olddivision = res.data;
 		}).catch((err)=>{
@@ -131,15 +124,169 @@
 		})
     }
 
-	onMount(async ()=>{
-		await getDivisions().then(()=>{
-			//document.getElementById('bind-datatable').click()
-		})
+	const checkCreateValidation = ()=>{
+		let ok = true
+		ok = validNameC(elementNameC) && ok
+		ok = validAcronymC(elementAcronymC) && ok
+		if(ok){
+			createDivision()
+			closemodalcreate.click()
+		}
+	}
+
+	const checkUpdateValidation = ()=>{
+		let ok = true
+		ok = validNameU(elementNameU) && ok
+		ok = validAcronymU(elementAcronymU) && ok
+		if(ok){
+			updateDivision()
+			closemodalupdate.click()
+		}
+	}
+
+	const clear = ()=>{
+		let elementClass = "form-control"
+
+		elementNameC.value = ""
+		newdivision.name = ""
+		elementNameC.className = `${elementClass}`
+		fbNameC = []
+
+		elementAcronymC.value = ""
+		newdivision.acronym = ""
+		elementAcronymC.className = `${elementClass}`
+		fbAcronymC = []
+
+		elementNameU.value = ""
+		olddivision.name = ""
+		elementNameU.className = `${elementClass}`
+		fbNameU = []
+
+		elementAcronymU.value = ""
+		olddivision.acronym = ""
+		elementAcronymU.className = `${elementClass}`
+		fbAcronymU = []
+
+	}
+
+	let elementNameC
+	let fbNameC = []
+	let elementAcronymC
+	let fbAcronymC = []
+
+	let elementNameU
+	let fbNameU = []
+	let elementAcronymU
+	let fbAcronymU = []
+
+	const validNameC = (target)=>{
+		let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbNameC = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbNameC.push("El nombre no debe contener números o caracteres especiales.")
+		}
+		if(v.length < 3 || v.length > 100){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbNameC.push("El nombre contener de 3 a 100 caracteres.")
+		}
+		
+		return validated
+	}
+	const validAcronymC = (target)=>{
+		let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbAcronymC = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		
+		let nameformat = /^([A-Z]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbAcronymC.push("El acrónimo no debe contener minúsculas, números o caracteres especiales.")
+		}
+		if(v.length < 3 || v.length > 7){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbAcronymC.push("El nombre contener de 3 a 7 caracteres.")
+		}
+		
+		return validated
+	}
+	const validNameU = (target)=>{
+		let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbNameU = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbNameU.push("El nombre no debe contener números o caracteres especiales.")
+		}
+		if(v.length < 3 || v.length > 100){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbNameU.push("El nombre contener de 3 a 100 caracteres.")
+		}
+		
+		return validated
+	}
+	const validAcronymU = (target)=>{
+		let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbAcronymU = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		
+		let nameformat = /^([A-Z]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbAcronymU.push("El acrónimo no debe contener minúsculas, números o caracteres especiales.")
+		}
+		if(v.length < 3 || v.length > 7){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbAcronymU.push("El nombre contener de 3 a 7 caracteres.")
+		}
+		
+		return validated
+	}
+
+	const listenerValidity = ()=>{
+		elementNameC.addEventListener('input',(e)=>{validNameC(e.target)})
+		elementAcronymC.addEventListener('input',(e)=>{validAcronymC(e.target)})
+		elementNameU.addEventListener('input',(e)=>{validNameU(e.target)})
+		elementAcronymU.addEventListener('input',(e)=>{validAcronymU(e.target)})
+	}
+
+	onMount(()=>{
+		getDivisions()
+		listenerValidity()
 	})
 </script>
 
 <main>
-	<div style="background-color: #F8F9FA;" class="container-lg my-4 p-4 rounded border">
+	<div class="main-card container-lg my-4 p-4 rounded border shadow">
 		<div class="row mb-3">
 			<div class="col">
 				<h3><i class="fas fa-graduation-cap"></i> Divisiones Académicas</h3>
@@ -167,7 +314,7 @@
 										<i class="fas fa-sync-alt"></i> Mostrar todos
 									</button>
 								{/if}
-								<input bind:value="{divisions.search}" type="text" class="form-control" placeholder="Busca algo..." aria-label="Buscador" aria-describedby="button-search">
+								<input on:keyup="{(e)=>{if(e.keyCode === 13){getDivisionsBySearch()}}}" bind:value="{divisions.search}" type="search" class="form-control" placeholder="Busca algo..." aria-label="Buscador" aria-describedby="button-search">
 								<button  on:click="{()=>getDivisionsBySearch()}" class="btn btn-outline-primary" type="button" id="button-search">
 									{#if searching}
 										<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -193,7 +340,7 @@
 						<thead>
 							<tr class="text-center">
 								<th>No.</th>
-								<th>División académica</th>
+								<th>División Académica</th>
 								<th>Siglas</th>
 								<th>Opciones</th>
 							</tr>
@@ -221,7 +368,7 @@
 				</div>
 				<nav aria-label="...">
 					<ul class="pagination justify-content-end">
-						{#if divisions.page-1 === 0}
+						{#if divisions.page === 1}
 							<li class="page-item disabled">
 								<a class="page-link">Anterior</a>
 							</li>							
@@ -266,41 +413,63 @@
 	<div class="modal fade" id="mo1" tabindex="-1" aria-labelledby="mol1" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="mol1">
-						<i class="fas fa-plus-circle" /> Nueva División Académica
-					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-				</div>
-				<div class="modal-body">
-					<form>
+				<form on:submit="{(e)=>{e.preventDefault();checkCreateValidation();}}">
+					<div class="modal-header">
+						<h5 class="modal-title" id="mol1">
+							<i class="fas fa-plus-circle" /> Nueva División Académica
+						</h5>
+						<button type="button" on:click="{()=>{clear()}}" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+					</div>
+					<div class="modal-body">
+						
 						<div class="row g-3">
 							<div class="col-12">
-								<label for="division" class="form-label">Nombre</label>
+								<label for="division" class="form-label">
+									<i class="fas fa-graduation-cap"></i> Nombre
+								</label>
 								<input
+									bind:this="{elementNameC}"
 									bind:value="{newdivision.name}"
 									id="division"
 									type="text"
 									class="form-control"
+									autocomplete="off"
+									placeholder="Ingrese el nombre de la división"
 								/>
+								{#each fbNameC as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
 							</div>
 
 							<div class="col-12">
-								<label for="acronym" class="form-label">Siglas</label>
+								<label for="acronym" class="form-label">
+									<i class="fas fa-graduation-cap"></i> Siglas
+								</label>
 								<input
+									bind:this="{elementAcronymC}"
 									bind:value="{newdivision.acronym}"
 									id="acronym"
 									type="text"
 									class="form-control"
+									autocomplete="off"
+									placeholder="Ingrese el acrónimo de la división"
 								/>
+								{#each fbAcronymC as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
 							</div>
 						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-					<button on:click="{()=>{createDivision();clear()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="fas fa-save"></i> Guardar</button>
-				</div>
+						
+					</div>
+					<div class="modal-footer">
+						<button bind:this="{closemodalcreate}" on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
+						<button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -309,41 +478,61 @@
 	<div class="modal fade" id="mo2" tabindex="-1" aria-labelledby="mol2" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="mol2">
-						<i class="fas fa-edit"></i> Editar División Académica
-					</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-				</div>
-				<div class="modal-body">
-					<form>
+				<form on:submit="{(e)=>{e.preventDefault();checkUpdateValidation();}}">
+					<div class="modal-header">
+						<h5 class="modal-title" id="mol2">
+							<i class="fas fa-edit"></i> Editar División Académica
+						</h5>
+						<button on:click="{()=>{clear()}}" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+					</div>
+					<div class="modal-body">
 						<div class="row g-3">
 							<div class="col-12">
-								<label for="divisionu" class="form-label">Nombre</label>
+								<label for="divisionu" class="form-label">
+									<i class="fas fa-graduation-cap"></i> Nombre
+								</label>
 								<input
+									bind:this="{elementNameU}"
 									bind:value="{olddivision.name}"
 									id="divisionu"
 									type="text"
 									class="form-control"
+									placeholder="Ingrese el nombre de la división"
+									autocomplete="off"
 								/>
+								{#each fbNameU as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
 							</div>
 
 							<div class="col-12">
-								<label for="acronymu" class="form-label">Siglas</label>
+								<label for="acronymu" class="form-label">
+									<i class="fas fa-graduation-cap"></i> Siglas
+								</label>
 								<input
+									bind:this="{elementAcronymU}"
 									bind:value="{olddivision.acronym}"
 									id="acronymu"
 									type="text"
 									class="form-control"
+									placeholder="Ingres el acrónimo de la división"
+									autocomplete="off"
 								/>
+								{#each fbAcronymU as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
 							</div>
 						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button on:click="{()=>{clear()}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-					<button on:click="{()=>{updateDivision();clear()}}" type="button" class="btn btn-primary" data-bs-dismiss="modal"><i class="fas fa-save"></i> Guardar</button>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<button on:click="{()=>{clear()}}" bind:this="{closemodalupdate}" type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cancelar</button>
+						<button type="submit" class="btn btn-primary" ><i class="fas fa-save"></i> Guardar</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>

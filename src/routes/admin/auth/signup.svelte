@@ -83,7 +83,7 @@
   });
 </script>
 
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+<div class="main-card container-lg my-4 p-4 rounded border shadow col-xl-10 col-xxl-8 px-4">
   <div class="col-md-7 col-lg-8">
     <h4 class="mb-3">Registro de administrador</h4>
     <form class="row g-3 needs-validation" novalidate>

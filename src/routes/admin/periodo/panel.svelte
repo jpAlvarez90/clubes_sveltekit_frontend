@@ -85,14 +85,13 @@
 <div class="container">
     <div class="row pt-4 mt-5">
         <div class="cold-md-4">
-            <div class="card card-blog">
-                <div class="card-image">
-                    <!-- svelte-ignore a11y-missing-attribute -->
-                    <img class="img" src="https://scontent.fmex36-1.fna.fbcdn.net/v/t1.6435-9/231020379_3010653835867448_4391276383959040543_n.jpg?_nc_cat=104&ccb=1-5&_nc_sid=e3f864&_nc_eui2=AeHmg-tRwHVhFpsx_XUSPKC40lKRfk2XfbrSUpF-TZd9uo_LHlKHHpj8aY4uAFTfJEir8XOK2978SgLgs3LP6lxA&_nc_ohc=UP5VRU86zYQAX9qpoyA&_nc_ht=scontent.fmex36-1.fna&oh=1345932cbc82ab894fde0251b8a8b27a&oe=619FBF99">
+            <div class="card card-blog shadow">
+                <div class="card-image shadow">
+                    <img class="img" src="https://scontent.fmex36-1.fna.fbcdn.net/v/t1.6435-9/231020379_3010653835867448_4391276383959040543_n.jpg?_nc_cat=104&ccb=1-5&_nc_sid=e3f864&_nc_eui2=AeHmg-tRwHVhFpsx_XUSPKC40lKRfk2XfbrSUpF-TZd9uo_LHlKHHpj8aY4uAFTfJEir8XOK2978SgLgs3LP6lxA&_nc_ohc=UP5VRU86zYQAX9qpoyA&_nc_ht=scontent.fmex36-1.fna&oh=1345932cbc82ab894fde0251b8a8b27a&oe=619FBF99" alt="fondo">
                 </div>
                 <div class="card-body text-center d-flex mt-4">
                     <div class="col-4">
-                        <div class="card text-dark bg-secondary mb-3" style="max-width: 18rem;">
+                        <div class="card shadow text-dark bg-secondary mb-3" style="max-width: 18rem;">
                             <div class="card-header" style=" color: white;">Periodo actual</div>
                             <div class="card-body" style=" color: white;">
                               <h5 class="card-title">{currentPeriod.term} {lastRow.year}</h5>
@@ -103,7 +102,7 @@
                         <button type="button" class="btn btn-primary mt-4" style="height: fit-content;" on:click="{()=>{activateNextPeriod()}}">Activar siguiente periodo</button>
                     </div>
                     <div class="col-4">
-                        <div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
+                        <div class="card shadow text-dark bg-light mb-3" style="max-width: 18rem;">
                             <div class="card-header">Siguiente periodo</div>
                             <div class="card-body">
                               <h5 class="card-title">{nextQT.term} {year}</h5>
@@ -126,7 +125,9 @@
     border-radius: 6px;
     color: rgba(0, 0, 0, 0.87);
     background: #fff;
+    /*
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    */
 }
 
 .card .card-image {
@@ -137,7 +138,9 @@
     margin-right: 15px;
     margin-top: -30px;
     border-radius: 6px;
+    /*
     box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
+    */
 }
 
 .card .card-image img {
