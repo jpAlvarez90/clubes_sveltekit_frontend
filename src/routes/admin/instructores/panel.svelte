@@ -422,6 +422,7 @@
 						</div>
 					</div>
 				</div>
+				
 				{#if instructors.rows.length == 0}
 					<Notrecords />
 				{:else}
