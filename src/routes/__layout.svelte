@@ -1,10 +1,11 @@
 <script>
     import Navbar from '../components/navbar.svelte';
+    import Footer from '../components/footer.svelte';
 </script>
 
 <Navbar />
 <slot></slot>
-
+<Footer/>
 <style>
     :global(.main-card){
         background-color: #F8F9FA;
