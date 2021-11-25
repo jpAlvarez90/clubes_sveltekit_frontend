@@ -72,6 +72,8 @@
     const cancelPwd = () => {
 		isPwdReseting = false;
         notEditing = true;
+        password = "";
+        password_repeat = "";
 	}
 
     const cancelEdit = () => {
@@ -196,8 +198,8 @@
             </div>
         </div>
     </div>
-</div>
-<div>
+    </div>
+    <div>
 </div>
 
 <style>
