@@ -210,12 +210,12 @@
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbName.push("El nombre debe ser correcto (no debe contener números o caracteres especiales) y debe empezar con mayúscula.")
+			fbName.push("El nombre no debe contener números o caracteres especiales, y debe empezar con mayúscula.")
 		}
 		if(v.length < 3 || v.length > 45){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbName.push("El nombre contener de 3 a 45 caracteres.")
+			fbName.push("El nombre debe contener de 3 a 45 caracteres.")
 		}
 		
 		return validated
@@ -233,7 +233,7 @@
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbLastName.push("El primer apellido debe ser correcto (no debe contener números o caracteres especiales) y debe empezar con mayúscula.")
+			fbLastName.push("El primer apellido no debe contener números o caracteres especiales, y debe empezar con mayúscula.")
 		}
 		if(v.length < 3 || v.length > 45){
 			validated = false
@@ -256,12 +256,12 @@
 		if(!nameformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbSecondLastName.push("El segundo noviembre debe ser correcto (no debe contener números o caracteres especiales) y debe empezar con mayúscula.")
+			fbSecondLastName.push("El segundo apellido no debe contener números o caracteres especiales, y debe empezar con mayúscula.")
 		}
 		if(v.length < 3 || v.length > 45){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbSecondLastName.push("El segundo noviembre contener de 3 a 45 caracteres.")
+			fbSecondLastName.push("El segundo apellido debe contener de 3 a 45 caracteres.")
 		}
 
 		return validated
@@ -279,12 +279,12 @@
 		if(!emailformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbEmail.push("El correo electrónico debe cumplir con un formato válido (correo@dominio).")
+			fbEmail.push("El correo electrónico debe cumplir con un formato válido.")
 		}
 		if(v.length > 60){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbEmail.push("El correo electrónico es demasiado largo (más de 60 caracteres).")
+			fbEmail.push("El correo electrónico es demasiado largo.")
 		}
 		if(v.split('@')[1] != 'utez.edu.mx'){
 			validated = false
@@ -307,12 +307,12 @@
 		if(!emailformat.test(v)){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbPersonalEmail.push("El correo electrónico debe cumplir con un formato válido (correo@dominio).")
+			fbPersonalEmail.push("El correo electrónico debe cumplir con un formato válido.")
 		}
 		if(v.length > 60){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbPersonalEmail.push("El correo electrónico es demasiado largo (más de 60 caracteres).")
+			fbPersonalEmail.push("El correo electrónico es demasiado largo.")
 		}
 
 		return validated
@@ -335,7 +335,7 @@
 		if(v.length > 20){
 			validated = false
 			target.className = `${elementClass} is-invalid`
-			fbPhone.push("El número telefónico es demasiado largo (más de 20 caracteres).")
+			fbPhone.push("El número telefónico es demasiado largo.")
 		}
 
 		return validated
@@ -381,7 +381,7 @@
 </script>
 
 <main>
-	<div class="main-card shadow container-lg my-4 p-4 rounded border">
+	<div class="main-card container-lg my-4 p-4 rounded border shadow">
 		<div class="row mb-3">
 			<div class="col">
 				<h3><i class="fas fa-user-tie"></i> Instructores</h3>
@@ -517,8 +517,8 @@
 					<button type="button" on:click="{()=>{clear()}}" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body">
-					<div class="row g-4 mb-4">
-						<div class="col-lg-4">
+					<div class="row g-4 mb-5">
+						<div class="col-lg-6">
 							<label for="name" class="form-label">
 								<i class="fas fa-user"></i> Nombre
 							</label>
@@ -537,7 +537,7 @@
 								</div>
 							{/each}
 						</div>
-						<div class="col-lg-4">
+						<div class="col-lg-6">
 							<label for="firstlastname" class="form-label">
 								<i class="fas fa-user"></i> Primer apellido
 							</label>
@@ -556,7 +556,7 @@
 								</div>
 							{/each}
 						</div>
-						<div class="col-lg-4">
+						<div class="col-lg-6">
 							<label for="secondlastname" class="form-label">
 								<i class="fas fa-user"></i> Segundo apellido
 							</label>
@@ -576,6 +576,7 @@
 							{/each}
 						</div>
 					</div>
+					<hr>					
 					<div class="row g-4 mb-4">
 						<div class="col-lg-6">
 							<label for="email" class="form-label">
@@ -616,7 +617,7 @@
 							{/each}
 						</div>
 					</div>
-					<div class="row g-4 mb-4">
+					<div class="row g-4 mb-5">
 						<div class="col-lg-6">
 							<label for="phone" class="form-label">
 								<i class="fas fa-phone"></i> Teléfono fijo
