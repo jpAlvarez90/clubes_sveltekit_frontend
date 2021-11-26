@@ -5,6 +5,10 @@
     import swal from './../../../utils/sweetalert2'
     import {storage} from './../../../utils/firebase'
     import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
+<<<<<<< HEAD
+=======
+    import { goto } from '$app/navigation';
+>>>>>>> 9ff9e2493fd996a04b86461a97f787ab43ec505d
 
     const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
 	const TITDELETED = "Eliminado"
@@ -120,9 +124,7 @@
     }
 
     const getWorkshop = (id) => {
-        axiosapi.doGet('/workshop/get/' + id).then((res) => {
-            oldWorkshop = res.data
-        })
+        goto(`/admin/talleres/detalle/${id}`)
     }
 
     const createWorkshop = async () => {
@@ -233,7 +235,7 @@
             feedbackDescription.push('La descripción debe tener mínimo 3 caracteres.')
             isValid = false
         }
-        if(value,length > 1700){
+        if(value.length > 1700){
             target.className =  classElement +' is-invalid'
             feedbackDescription.push('La descripción debe tener máximo 1700 caracteres.')
             isValid = false
@@ -387,7 +389,7 @@
                                         </div>
                                         <div class="card-footer bg-transparent">
                                             <div class="btn-group w-100">
-                                                <button  
+                                                <button on:click="{()=>getWorkshop(w.id)}" 
                                                     type="button" class="btn btn-outline-primary">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
