@@ -122,6 +122,7 @@
 		let id = oldgrade.id
 		axiosapi.doPut("/grade/update/"+id,oldgrade).then(res=>{		
 			getGrades()
+			clear()
 			swal.con('success',TITUPDATED,TXTUPDATED)
 		}).catch((err)=>{
 			swal.err()
@@ -131,6 +132,7 @@
 	const createGrade = ()=>{
 		axiosapi.doPost("/grade/create",newgrade).then((res)=>{
 			getGrades()
+			clear()
 			swal.con('success',TITCREATED,TXTCREATED)
 		}).catch((err)=>{
 			swal.err()
@@ -206,7 +208,7 @@
 	const validTermC = (target)=>{
 		let validated = true
 		let v = target.value
-		let elementClass = "form-control"
+		let elementClass = "form-select"
 		fbTermC = []
 		target.className = `${elementClass} is-valid`
 
@@ -222,7 +224,7 @@
 	const validLevelC = (target)=>{
 		let validated = true
 		let v = target.value
-		let elementClass = "form-control"
+		let elementClass = "form-select"
 		fbLevelC = []
 		target.className = `${elementClass} is-valid`
 
@@ -255,7 +257,7 @@
 	const validTermU = (target)=>{
 		let validated = true
 		let v = target.value
-		let elementClass = "form-control"
+		let elementClass = "form-select"
 		fbTermU = []
 		target.className = `${elementClass} is-valid`
 		
@@ -265,7 +267,7 @@
 	const validLevelU = (target)=>{
 		let validated = true
 		let v = target.value
-		let elementClass = "form-control"
+		let elementClass = "form-select"
 		fbLevelU = []
 		target.className = `${elementClass} is-valid`
 		
@@ -274,6 +276,7 @@
 
 	const clear = ()=>{
 		let elementClass = "form-control"
+		let elementClassSelect = "form-select"
 
 		elementGradeC.value = ""
 		newgrade.grade = ""
@@ -282,12 +285,12 @@
 
 		elementTermC.value = "0"
 		newgrade.id_qu_te = "0"
-		elementTermC.className = `${elementClass}`
+		elementTermC.className = `${elementClassSelect}`
 		fbTermC = []
 
 		elementLevelC.value = "0"
 		newgrade.id_ac_le = "0"
-		elementLevelC.className = `${elementClass}`
+		elementLevelC.className = `${elementClassSelect}`
 		fbLevelC = []
 
 		elementGradeU.value = ""
@@ -297,12 +300,12 @@
 
 		elementTermU.value = "0"
 		oldgrade.id_qu_te = "0"
-		elementTermU.className = `${elementClass}`
+		elementTermU.className = `${elementClassSelect}`
 		fbTermU = []
 
 		elementLevelU.value = "0"
 		oldgrade.id_ac_le = "0"
-		elementLevelU.className = `${elementClass}`
+		elementLevelU.className = `${elementClassSelect}`
 		fbLevelU = []
 
 
@@ -493,7 +496,7 @@
 								<label for="plazo" class="form-label">
 									<i class="fas fa-graduation-cap"></i> Plazo
 								</label>
-								<select bind:this="{elementTermC}" bind:value="{newgrade.id_qu_te}" id="plazo" class="form-control">
+								<select bind:this="{elementTermC}" bind:value="{newgrade.id_qu_te}" id="plazo" class="form-select">
 									<option value="0">Seleccione una opción...</option>
 									{#each terms as term}
 										<option value="{term.id}" >{term.term}</option>
@@ -511,7 +514,7 @@
 								<label for="nivel" class="form-label">
 									<i class="fas fa-graduation-cap"></i> Nivel Académico
 								</label>
-								<select bind:this="{elementLevelC}" bind:value="{newgrade.id_ac_le}" id="nivel" class="form-control">
+								<select bind:this="{elementLevelC}" bind:value="{newgrade.id_ac_le}" id="nivel" class="form-select">
 									<option value="0">Seleccione una opción...</option>
 									{#each levels as level}
 										<option value="{level.id}" >{level.name}</option>     
@@ -564,7 +567,7 @@
 						</div>
 						<div class="col-md-8">
 							<label for="plazou" class="form-label"><i class="fas fa-graduation-cap"></i> Plazo</label>
-							<select bind:this="{elementTermU}" bind:value="{oldgrade.id_qu_te}" id="plazou" class="form-control">
+							<select bind:this="{elementTermU}" bind:value="{oldgrade.id_qu_te}" id="plazou" class="form-select">
 								{#each terms as term}
 									<option value="{term.id}" >{term.term}</option>     
 								{/each}
@@ -579,7 +582,7 @@
 					<div class="row g-3">
 						<div class="col-12">
 							<label for="nivelu" class="form-label"><i class="fas fa-graduation-cap"></i> Nivel Académico</label>
-							<select bind:this="{elementLevelU}" bind:value="{oldgrade.id_ac_le}" id="nivelu" class="form-control">
+							<select bind:this="{elementLevelU}" bind:value="{oldgrade.id_ac_le}" id="nivelu" class="form-select">
 								{#each levels as level}
 									<option value="{level.id}" >{level.name}</option>     
 								{/each}

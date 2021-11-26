@@ -98,7 +98,8 @@
 	const getAd = (id)=>{
 		axiosapi.doGet("/ad/get/"+id).then(res=>{		
 			oldad = res.data;
-		}).catch((err)=>{
+			console.log(res.data);
+		}).catch(()=>{
 			swal.err()
 		})
 	}

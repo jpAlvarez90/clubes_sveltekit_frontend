@@ -88,6 +88,8 @@
 	const getDivision = (id)=>{
 		axiosapi.doGet("/academic/division/get/"+id).then(res=>{		
 			olddivision = res.data;
+			nameU = res.data.name
+			acronymU = res.data.acronym
 		}).catch((err)=>{
 			swal.err()
 		})
@@ -124,20 +126,33 @@
 		})
     }
 
-	const checkCreateValidation = ()=>{
+	const checkCreateValidation = async ()=>{
 		let ok = true
-		ok = validNameC(elementNameC) && ok
-		ok = validAcronymC(elementAcronymC) && ok
+		let respName = await validNameC(elementNameC).then((resp) => {
+			return resp
+		})
+		let respAcronym = await validAcronymC(elementAcronymC).then((resp) => {
+			return resp
+		})
+		ok = respAcronym && ok
+		ok = respName && ok
+		console.log(ok);
 		if(ok){
 			createDivision()
 			closemodalcreate.click()
 		}
 	}
 
-	const checkUpdateValidation = ()=>{
+	const checkUpdateValidation = async()=>{
 		let ok = true
-		ok = validNameU(elementNameU) && ok
-		ok = validAcronymU(elementAcronymU) && ok
+		let respName = await validNameU(elementNameU).then((resp) => {
+			return resp
+		})
+		let respAcronym = await validAcronymU(elementAcronymU).then((resp) => {
+			return resp
+		})
+		ok = respName && ok
+		ok = respAcronym && ok
 		if(ok){
 			updateDivision()
 			closemodalupdate.click()
@@ -167,6 +182,8 @@
 		elementAcronymU.className = `${elementClass}`
 		fbAcronymU = []
 
+		verifyAcronymExistence = true
+		verifyNameExistence = true
 	}
 
 	let elementNameC
@@ -178,15 +195,20 @@
 	let fbNameU = []
 	let elementAcronymU
 	let fbAcronymU = []
+	let verifyNameExistence = true
+	let verifyAcronymExistence = true
+	let verifyNameExistenceU = true
+	let verifyAcronymExistenceU = true
+	let nameU = ''
+	let acronymU = ''
 
-	const validNameC = (target)=>{
+	const validNameC = async (target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbNameC = []
+		verifyNameExistence = true
 		target.className = `${elementClass} is-valid`
-
-		// Formato de nombre válido
 		
 		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
 		if(!nameformat.test(v)){
@@ -199,18 +221,36 @@
 			target.className = `${elementClass} is-invalid`
 			fbNameC.push("El nombre contener de 3 a 100 caracteres.")
 		}
-		
+		if(v){
+			let div = {
+				name : v,
+				acronym: ""
+			}
+			const resp = await axiosapi.doPost('/academic/division/verify/existence', div).then((res) => {
+					return res.data
+				}).catch(() => {
+					swal.err()
+				})
+
+				if(resp > 0){
+					validated = false
+					target.className = `${elementClass} is-invalid`
+					verifyNameExistence = false
+				}
+		}else{
+			validated = false
+		}
+
 		return validated
 	}
-	const validAcronymC = (target)=>{
+	const validAcronymC = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbAcronymC = []
+		verifyAcronymExistence = true
 		target.className = `${elementClass} is-valid`
 
-		// Formato de nombre válido
-		
 		let nameformat = /^([A-Z]+[\s]*)+$/
 		if(!nameformat.test(v)){
 			validated = false
@@ -222,16 +262,36 @@
 			target.className = `${elementClass} is-invalid`
 			fbAcronymC.push("El nombre contener de 3 a 7 caracteres.")
 		}
+
+		if(v){
+			let div = {
+				name : "",
+				acronym: v
+			}
+			const resp = await axiosapi.doPost('/academic/division/verify/existence', div).then((res) => {
+					return res.data
+				}).catch(() => {
+					swal.err()
+				})
+
+				if(resp > 0){
+					validated = false
+					target.className = `${elementClass} is-invalid`
+					verifyAcronymExistence = false
+				}
+		}else{
+			validated = false
+		}
 		
 		return validated
 	}
-	const validNameU = (target)=>{
+	const validNameU = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbNameU = []
 		target.className = `${elementClass} is-valid`
-
+		verifyNameExistenceU = true
 		// Formato de nombre válido
 		
 		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
@@ -245,15 +305,38 @@
 			target.className = `${elementClass} is-invalid`
 			fbNameU.push("El nombre contener de 3 a 100 caracteres.")
 		}
+
+		if(v){
+			if(v != nameU){
+				let div = {
+				name : v,
+				acronym: ""
+				}
+				const resp = await axiosapi.doPost('/academic/division/verify/existence', div).then((res) => {
+						return res.data
+					}).catch(() => {
+						swal.err()
+					})
+
+					if(resp > 0){
+						validated = false
+						target.className = `${elementClass} is-invalid`
+						verifyNameExistenceU = false
+					}
+				}
+		}else{
+			validated = false
+		}
 		
 		return validated
 	}
-	const validAcronymU = (target)=>{
+	const validAcronymU = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbAcronymU = []
 		target.className = `${elementClass} is-valid`
+		verifyAcronymExistenceU = true
 
 		// Formato de nombre válido
 		
@@ -268,15 +351,37 @@
 			target.className = `${elementClass} is-invalid`
 			fbAcronymU.push("El nombre contener de 3 a 7 caracteres.")
 		}
+
+		if( v != acronymU){
+			if(v){
+				let div = {
+					name : "",
+					acronym: v
+				}
+				const resp = await axiosapi.doPost('/academic/division/verify/existence', div).then((res) => {
+						return res.data
+					}).catch(() => {
+						swal.err()
+					})
+
+					if(resp > 0){
+						validated = false
+						target.className = `${elementClass} is-invalid`
+						verifyAcronymExistenceU = false
+					}
+			}else{
+				validated = false
+			}
+		}
 		
 		return validated
 	}
 
 	const listenerValidity = ()=>{
-		elementNameC.addEventListener('input',(e)=>{validNameC(e.target)})
-		elementAcronymC.addEventListener('input',(e)=>{validAcronymC(e.target)})
-		elementNameU.addEventListener('input',(e)=>{validNameU(e.target)})
-		elementAcronymU.addEventListener('input',(e)=>{validAcronymU(e.target)})
+		elementNameC.addEventListener('input',async(e)=>{validNameC(e.target)})
+		elementAcronymC.addEventListener('input', async(e)=>{validAcronymC(e.target)})
+		elementNameU.addEventListener('input', async(e)=>{validNameU(e.target)})
+		elementAcronymU.addEventListener('input', async(e)=>{validAcronymU(e.target)})
 	}
 
 	onMount(()=>{
@@ -370,20 +475,24 @@
 					<ul class="pagination justify-content-end">
 						{#if divisions.page === 1}
 							<li class="page-item disabled">
-								<a class="page-link">Anterior</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="#">Anterior</a>
 							</li>							
 						{:else}
 							<li class="page-item">
+								<!-- svelte-ignore a11y-invalid-attribute -->
 								<a on:click="{()=>getDivisionsByPreviousPage()}" class="page-link" href="#">Anterior</a>
 							</li>
 						{/if}
 						{#each Array.from({ length: divisions.totalPages }, (_, i) => 1 + (i * 1)) as item}
 							{#if divisions.page == item}
 								<li class="page-item active" aria-current="page">
+									<!-- svelte-ignore a11y-invalid-attribute -->
 									<a class="page-link" href="#">{item}</a>
 								</li>	
 							{:else}
 								<li class="page-item" aria-current="page">
+									<!-- svelte-ignore a11y-invalid-attribute -->
 									<a class="page-link" 
 									on:click="{()=>getDivisionsByPage(item)}" 
 									href="#"
@@ -394,10 +503,12 @@
 						{/each}
 						{#if divisions.page === divisions.totalPages}
 							<li class="page-item disabled">
-								<a class="page-link">Siguiente</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="#">Siguiente</a>
 							</li>							
 						{:else}
 							<li class="page-item">
+								<!-- svelte-ignore a11y-invalid-attribute -->
 								<a on:click="{()=>getDivisionsByNextPage()}" class="page-link" href="#">Siguiente</a>
 							</li>
 						{/if}
@@ -441,6 +552,9 @@
 										{item}
 									</div>
 								{/each}
+								{#if !verifyNameExistence}
+									<div class="invalid-feedback">División académica existente.</div>
+								{/if}
 							</div>
 
 							<div class="col-12">
@@ -461,6 +575,9 @@
 										{item}
 									</div>
 								{/each}
+								{#if !verifyAcronymExistence}
+									<div class="invalid-feedback">Siglas existentes.</div>
+								{/if}
 							</div>
 						</div>
 						
@@ -505,6 +622,9 @@
 										{item}
 									</div>
 								{/each}
+								{#if !verifyNameExistenceU}
+									<div class="invalid-feedback">División académica existente.</div>
+								{/if}
 							</div>
 
 							<div class="col-12">
@@ -525,6 +645,9 @@
 										{item}
 									</div>
 								{/each}
+								{#if !verifyAcronymExistenceU}
+									<div class="invalid-feedback">Siglas existentes.</div>
+								{/if}
 							</div>
 						</div>
 					</div>

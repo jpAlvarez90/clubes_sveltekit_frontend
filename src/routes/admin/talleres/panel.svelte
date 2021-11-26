@@ -5,10 +5,7 @@
     import swal from './../../../utils/sweetalert2'
     import {storage} from './../../../utils/firebase'
     import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
-<<<<<<< HEAD
-=======
     import { goto } from '$app/navigation';
->>>>>>> 9ff9e2493fd996a04b86461a97f787ab43ec505d
 
     const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
 	const TITDELETED = "Eliminado"

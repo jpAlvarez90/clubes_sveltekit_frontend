@@ -3,7 +3,6 @@
   import validator from 'validator';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-
 	let user = {
     name: '',
     first_last_name: '',
@@ -17,9 +16,7 @@
     personal_email: '',
     id_role: 1
 	};
-
   let password_match = true;
-
   // $: if (user.password === user.password_repeat && user.password !== '') {
   //   password_match = false;
   // }
@@ -27,7 +24,6 @@
   $: if (user.password !== user.password_repeat || user.password == '') {
     password_match = true;
   }
-
 	const signup = () => {
 		axiosapi.doPost("/auth/signup",user).then(({data})=>{
       let name = document.getElementById('name');
@@ -40,7 +36,6 @@
       let phone = document.getElementById('phone');
       let cellphone = document.getElementById('cellphone');
       let personal_email = document.getElementById('personal_email');
-
 			if(!data.token){
         if (data.status == 0) {
           Swal.fire({
@@ -49,7 +44,6 @@
             confirmButtonColor: '#0D6EFD',
             icon: 'error'
           });
-
           name.value = '';
           first_last_name.value = '';
           second_last_name.value = '';
@@ -87,7 +81,6 @@
 			});
 		});
 	}
-
   // Validaciones
   onMount(() => {
     let name = document.getElementById('name');
@@ -100,7 +93,6 @@
     let phone = document.getElementById('phone');
     let cellphone = document.getElementById('cellphone');
     let personal_email = document.getElementById('personal_email');
-
     let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
     let emailformat = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
     let phoneformat = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
@@ -199,7 +191,6 @@
         personal_email.classList.add('is-invalid');
       }
     });
-
     (function () {
       'use strict'
       var forms = document.querySelectorAll('.needs-validation')
@@ -217,30 +208,6 @@
         })
     })()
   });
-
-<<<<<<< HEAD
-<div class="main-card container-lg my-4 p-4 rounded border shadow col-xl-10 col-xxl-8 px-4">
-  <div class="col-md-7 col-lg-8">
-    <h4 class="mb-3">Registro de administrador</h4>
-    <form class="row g-3 needs-validation" novalidate>
-      <div class="row g-3">
-        
-        <!-- Nombre -->
-        <div class="col-sm-12">
-          <label for="name" class="form-label">Nombre(s)</label>
-          <input type="text" class="form-control" id="name" placeholder="" bind:value="{user.name}" required>
-          <div class="invalid-feedback">
-            Valid first name is required.
-          </div>
-        </div>
-
-        <!-- Primer apellido -->
-        <div class="col-sm-6">
-          <label for="first_last_name" class="form-label">Primer apellido</label>
-          <input type="text" class="form-control" id="first_last_name" placeholder="" bind:value="{user.first_last_name}" required>
-          <div class="invalid-feedback">
-            Valid last name is required.
-=======
   
 </script>
 <div class="main-card container-lg my-4 p-4 rounded border shadow">
@@ -260,7 +227,6 @@
             <input type="text" class="form-control" id="name" placeholder="" bind:value="{user.name}" required>
             <!-- Mensajes para validación   -->
             <div class="invalid-feedback">El nombres (s) no deben contener ni caracteres especiales ni números.</div>
->>>>>>> 9ff9e2493fd996a04b86461a97f787ab43ec505d
           </div>
 
           <!-- Primer apellido -->
