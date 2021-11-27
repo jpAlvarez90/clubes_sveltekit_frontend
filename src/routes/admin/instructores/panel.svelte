@@ -32,7 +32,7 @@
         personal_email: "",
         phone: "",
         cellphone: "",
-        password: "Beltran3264"
+        password: ""
 	};
 	let oldinstructor = {
 		id:0,
@@ -107,10 +107,23 @@
 	}
 
 	const createInstructor = ()=>{
-		axiosapi.doPost("/instructor/create",newinstructor).then((res)=>{
-			swal.con('success',TITCREATED,TXTCREATED)
-			getInstructors()
-		}).catch((err)=>{
+		let pass = generatePassword()
+
+		let obj = {
+			email : newinstructor.email,
+			password: pass
+		}
+		newinstructor.password = pass
+		axiosapi.doPost("/instructor/create",newinstructor).then(()=>{
+			axiosapi.doPost('/instructor/sendEmail/credentials', obj).then(() => {
+				swal.con('success',TITCREATED,TXTCREATED)
+				getInstructors()
+			}).catch((error) => {
+				console.log(error);
+				swal.err()
+			})
+		}).catch((error)=>{
+			console.log(error);
 			swal.err()
 		})
 	}
@@ -128,15 +141,55 @@
 		})
     }
 
-	const checkCreateValidation = ()=>{
+	const generatePassword = () => {
+		var chars = [
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+			"abcdefghijklmnopqrstuvwxyz",
+			"0123456789",
+			"!@#$%^&*()_+|}{[]\:;?><,./-=",
+		];
+		var randPwd = [2, 2, 3, 1]
+			.map(function(len, i) {
+			return Array(len)
+				.fill(chars[i])
+				.map(function(x) {
+				return x[Math.floor(Math.random() * x.length)];
+				})
+				.join("");
+			})
+			.concat()
+			.join("")
+			.split("")
+			.sort(function() {
+			return 0.5 - Math.random();
+			})
+			.join("");
+		
+		return randPwd
+	}
+
+	const checkCreateValidation = async()=>{
 		let ok = true
+		let respPerEmail = await validPersonalEmail(elementPersonalEmail).then((res) =>{
+			return res
+		})
+		let respEmail = await validEmail(elementEmail).then((res) =>{
+			return res
+		})
+		let respPhone = await validPhone(elementPhone).then((res) =>{
+			return res
+		})
+		let respCellphone = await validCellphone(elementCellphone).then((res) =>{
+			return res
+		})
+
 		ok = validName(elementName) && ok
 		ok = validLastname(elementLastName) && ok
 		ok = validSecondLastname(elementSecondLastName) && ok
-		ok = validEmail(elementEmail) && ok
-		ok = validPersonalEmail(elementPersonalEmail) && ok
-		ok = validPhone(elementPhone) && ok
-		ok = validCellphone(elementCellphone) && ok
+		ok = respEmail && ok
+		ok = respPerEmail && ok
+		ok = respPhone && ok
+		ok = respCellphone && ok
 		if(ok){
 			createInstructor()
 			closemodalcreate.click()	
@@ -197,6 +250,11 @@
 	let fbPhone = []
 	let elementCellphone
 	let fbCellphone = []
+
+	let verifyEmailExistence = true
+	let verifyEmailUserExistence = true
+	let verifyCellphoneExistence = true
+	let verifyPhoneExistence = true
 
 	const validName = (target)=>{
 		let validated = true
@@ -267,11 +325,12 @@
 		return validated
 	}
 
-	const validEmail = (target)=>{
+	const validEmail = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbEmail = []
+		verifyEmailUserExistence = true
 		target.className = `${elementClass} is-valid`
 
 		// Formato de correo válido
@@ -292,14 +351,31 @@
 			fbEmail.push("El correo electrónico debe pertenecer al dominio @utez.edu.mx.")
 		}
 
+		if(v){
+			const resp = await axiosapi.doGet('/user/verify/email/existence/'+ v).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${elementClass} is-invalid`
+				verifyEmailUserExistence = false
+			}
+		}else{
+			validated = false
+		}
+
 		return validated
 	}
 
-	const validPersonalEmail = (target)=>{
+	const validPersonalEmail = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbPersonalEmail = []
+		verifyEmailExistence = true
 		target.className = `${elementClass} is-valid`
 
 		// Formato de correo válido
@@ -315,14 +391,36 @@
 			fbPersonalEmail.push("El correo electrónico es demasiado largo.")
 		}
 
+		if(v){
+			let obj = {
+				flag : "email",
+				data: v
+			}
+
+			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${elementClass} is-invalid`
+				verifyEmailExistence = false
+			}
+		}else{
+			validated = false
+		}
+
 		return validated
 	}
 
-	const validPhone = (target)=>{
+	const validPhone = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbPhone = []
+		verifyPhoneExistence = true
 		target.className = `${elementClass} is-valid`
 
 		// Formato de teléfono válido
@@ -338,14 +436,36 @@
 			fbPhone.push("El número telefónico es demasiado largo.")
 		}
 
+		if(v){
+			let obj = {
+				flag : "phone",
+				data: v
+			}
+
+			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${elementClass} is-invalid`
+				verifyPhoneExistence = false
+			}
+		}else{
+			validated = false
+		}
+
 		return validated
 	}
 
-	const validCellphone = (target)=>{
+	const validCellphone = async(target)=>{
 		let validated = true
 		let v = target.value
 		let elementClass = "form-control"
 		fbCellphone = []
+		verifyCellphoneExistence = true
 		target.className = `${elementClass} is-valid`
 
 		// Formato de teléfono válido
@@ -361,6 +481,27 @@
 			fbCellphone.push("El número telefónico es demasiado largo (más de 20 caracteres).")
 		}
 
+		if(v){
+			let obj = {
+				flag : "cellphone",
+				data: v
+			}
+
+			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${elementClass} is-invalid`
+				verifyCellphoneExistence = false
+			}
+		}else{
+			validated = false
+		}
+
 		return validated
 	}
 
@@ -369,9 +510,9 @@
 		elementLastName.addEventListener('input',(e)=>{validLastname(e.target)})
 		elementSecondLastName.addEventListener('input',(e)=>{validSecondLastname(e.target)})
 		elementEmail.addEventListener('input',(e)=>{validEmail(e.target)})
-		elementPersonalEmail.addEventListener('input',(e)=>{validPersonalEmail(e.target)})
-		elementPhone.addEventListener('input',(e)=>{validPhone(e.target)})
-		elementCellphone.addEventListener('input',(e)=>{validCellphone(e.target)})
+		elementPersonalEmail.addEventListener('input',async(e)=>{validPersonalEmail(e.target)})
+		elementPhone.addEventListener('input',async(e)=>{validPhone(e.target)})
+		elementCellphone.addEventListener('input',async(e)=>{validCellphone(e.target)})
 	}
 
 	onMount(()=>{
@@ -468,34 +609,40 @@
 					<ul class="pagination justify-content-end">
 						{#if instructors.page === 1}
 							<li class="page-item disabled">
-								<a class="page-link">Anterior</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="">Anterior</a>
 							</li>							
 						{:else}
 							<li class="page-item">
-								<a on:click="{()=>getInstructorsByPreviousPage()}" class="page-link" href="#">Anterior</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a on:click="{()=>getInstructorsByPreviousPage()}" class="page-link" href="">Anterior</a>
 							</li>
 						{/if}
 						{#each Array.from({ length: instructors.totalPages }, (_, i) => 1 + (i * 1)) as item}
 							{#if instructors.page == item}
+							<!-- svelte-ignore a11y-invalid-attribute -->
 								<li class="page-item active" aria-current="page">
-									<a class="page-link" href="#">{item}</a>
+									<a class="page-link" href="">{item}</a>
 								</li>	
 							{:else}
+							<!-- svelte-ignore a11y-invalid-attribute -->
 								<li class="page-item" aria-current="page">
 									<a class="page-link" 
 									on:click="{()=>getInstructorsByPage(item)}" 
-									href="#"
+									href=""
 									>{item}</a>
 								</li>	
 							{/if}
 						{/each}
 						{#if instructors.page === instructors.totalPages}
 							<li class="page-item disabled">
-								<a class="page-link">Siguiente</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a class="page-link" href="">Siguiente</a>
 							</li>							
 						{:else}
 							<li class="page-item">
-								<a on:click="{()=>getInstructorsByNextPage()}" class="page-link" href="#">Siguiente</a>
+								<!-- svelte-ignore a11y-invalid-attribute -->
+								<a on:click="{()=>getInstructorsByNextPage()}" class="page-link" href="">Siguiente</a>
 							</li>
 						{/if}
 					</ul>
@@ -597,6 +744,11 @@
 									{item}
 								</div>
 							{/each}
+							{#if !verifyEmailUserExistence}
+							<div class="invalid-feedback">
+								Correo electrónico en uso.
+							</div>
+							{/if}
 						</div>
 						<div class="col-lg-6">
 							<label for="personalemail" class="form-label">
@@ -616,6 +768,11 @@
 									{item}
 								</div>
 							{/each}
+							{#if !verifyEmailExistence}
+							<div class="invalid-feedback">
+								Correo electrónico en uso.
+							</div>
+							{/if}
 						</div>
 					</div>
 					<div class="row g-4 mb-5">
@@ -637,6 +794,12 @@
 									{item}
 								</div>
 							{/each}
+
+							{#if !verifyPhoneExistence}
+								<div class="invalid-feedback">
+									Teléfono fijo en uso.
+								</div>
+							{/if}
 						</div>
 						<div class="col-lg-6">
 							<label for="cellphone" class="form-label">
@@ -656,6 +819,11 @@
 									{item}
 								</div>
 							{/each}
+							{#if !verifyCellphoneExistence}
+								<div class="invalid-feedback">
+									Teléfono móvil en uso.
+								</div>
+							{/if}
 						</div>
 					</div>
 				</div>

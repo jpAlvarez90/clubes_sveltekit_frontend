@@ -25,20 +25,6 @@
 		id_qu_gr: ''
 	};
 
-	let flagName = false
-	let flagFirstLastName = false
-	let flagSecondLastName = false
-	let flagSchoolId = false
-	let flagGrade = false
-	let flagGroup = false
-	let flagDivision = false
-	let flagLevel = false
-	let flagCareer = false
-	let flagPerEmail = false
-	let flagInstEmail = false
-	let flagPass1 = false
-	let flagPass2 = false
-
 	let nameElement;
 	let nameFeedback = [];
 	let firstLastNameElement;
@@ -70,10 +56,12 @@
 	let levelSelected = '';
 	let repeatPasswod = '';
 	let verifySchoolId = true
+	let verifyEmailUserExistence = true
+	let verifyPerEmailExistence = true
 
 	const getLists = () => {
 		axiosapi
-			.doGet('http://localhost:3001/grade/get')
+			.doGet('http://localhost:3001/grade/get/active')
 			.then((res) => {
 				grades = res.data;
 			})
@@ -91,7 +79,7 @@
 			});
 
 		axiosapi
-			.doGet('http://localhost:3001/academic/level/get')
+			.doGet('http://localhost:3001/academic/level/get/active')
 			.then((res) => {
 				academicLevels = res.data;
 			})
@@ -147,12 +135,6 @@
 		}
 	};
 
-	const verifyInstEmail = (valor) => {
-		var regex = /^([a-zA-Z0-9_\.])+@utez\.edu\.mx$/;
-		var correoVal = regex.test(valor);
-		return correoVal;
-	};
-
 	const verifyEmail = (valor) => {
 		let regex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
 		let resp = regex.test(valor)
@@ -193,361 +175,399 @@
 		}
 	}
 
-	const validate = () => {
-		nameElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagName = true
-
-			nameFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				nameFeedback.push('Completa el campo')
-				flagName = false
-			}
-			if(!onlyLetters(value)){
-				event.target.className =  classElement +' is-invalid'
-				nameFeedback.push('Introduzca solo letras')
-				flagName = false
-			}
+	// -----------------
+	const checkCreateValidation = async() => {
+		let respSchoolId = await validSchoolId(schoolIdElement).then((res) => {
+			return res
 		})
-
-		firstLastNameElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagFirstLastName = true
-
-			firstLastNameFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				firstLastNameFeedback.push('Completa el campo')
-				flagFirstLastName = false
-			}
-			if(!onlyLetters(value)){
-				event.target.className =  classElement +' is-invalid'
-				firstLastNameFeedback.push('Introduzca solo letras')
-				flagFirstLastName = false
-			}
+		let respInstEmail = await validInstEmail(instEmailElement).then((res) => {
+			return res
 		})
+		let ok = true
+		ok = validName(nameElement) && ok
+		ok = validFirstLastName(firstLastNameElement) && ok
+		ok = validSecondLastName(secondLastNameElement) && ok
+		ok = respSchoolId && ok
+		ok = validGrade(gradeElement) && ok
+		ok = validGroup(groupElement) && ok
+		ok = validDivision(divisionElement) && ok
+		ok = validLevel(levelElement) && ok
+		ok = validCareer(careerElement) && ok
+		ok = validPerEmail(perEmailElement) && ok
+		ok = respInstEmail && ok
+		ok = validPassword1(password1Element) && ok
+		ok = validPassword2(password2Element) && ok
 
-		secondLastNameElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagSecondLastName = true
+		if(ok){
+			registerStudent()
+		}
+	}
+	const validName = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		nameFeedback = []
+		target.className =  classElement +' is-valid'
 
-			secondLastNameFeedback = []
-			event.target.className =  classElement +' is-valid'
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			nameFeedback.push('Completar el campo.')
+		}
+		if(!onlyLetters(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			nameFeedback.push('Introduzca solo letras.')
+		}
+		if(value.length < 3){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			nameFeedback.push('El nombre debe tener mínimo 3 caracteres.')
+		}
+		if(value.length > 45){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			nameFeedback.push('El nombre debe tener máximo 45 caracteres.')
+		}
 
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				secondLastNameFeedback.push('Completa el campo')
-				flagSecondLastName = false
-			}
-			if(!onlyLetters(value)){
-				event.target.className =  classElement +' is-invalid'
-				secondLastNameFeedback.push('Introduzca solo letras')
-				flagSecondLastName = false
-			}
-		})
+		return validated
+	}
 
-		schoolIdElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagSchoolId = true
+	const validFirstLastName = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		firstLastNameFeedback = []
+		target.className =  classElement +' is-valid'
 
-			schoolIdFeedback = []
-			event.target.className =  classElement +' is-valid'
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			firstLastNameFeedback.push('Completar el campo.')
+		}
+		if(!onlyLetters(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			firstLastNameFeedback.push('Introduzca solo letras.')
+		}
+		if(value.length < 3){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			firstLastNameFeedback.push('El primer apellido debe tener mínimo 3 caracteres.')
+		}
+		if(value.length > 45){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			firstLastNameFeedback.push('El primer apellido debe tener máximo 45 caracteres.')
+		}
 
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				schoolIdFeedback.push('Completa el campo')
-				flagSchoolId = false
-			}
-			if(value.length < 10){
-				event.target.className =  classElement +' is-invalid'
-				schoolIdFeedback.push('La matrícula debe tener mínimo 10 caracteres')
-				flagSchoolId = false
-			}
-			if(value.length > 11){
-				event.target.className =  classElement +' is-invalid'
-				schoolIdFeedback.push('La matrícula debe tener máximo 11 caracteres')
-				flagSchoolId = false
-			}
-		})
+		return validated
+	}
 
-		schoolIdElement.addEventListener('change', async (event) => {
-			if(student.school_id != '' || student.school_id != ' '){
-				let value = event.target.value
-				verifySchoolId = true
+	const validSecondLastName = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		secondLastNameFeedback = []
+		target.className =  classElement +' is-valid'
 
-				console.log(event.target.className);
-				let classElement = "form-control"
-				event.target.className =  classElement +' is-valid'
-				//console.log(verifySchoolId(value));
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			secondLastNameFeedback.push('Completar el campo.')
+		}
+		if(!onlyLetters(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			secondLastNameFeedback.push('Introduzca solo letras.')
+		}
+		if(value.length < 3){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			secondLastNameFeedback.push('El segundo apellido debe tener mínimo 3 caracteres.')
+		}
+		if(value.length > 45){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			secondLastNameFeedback.push('El segundo apellido debe tener máximo 45 caracteres.')
+		}
 
-				const resp = await axiosapi.doGet('http://localhost:3001/student/verify/school/id/'+value).then((res) => {
+		return validated
+	}
+
+	const validSchoolId = async(target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		schoolIdFeedback = []
+		verifySchoolId = true
+		target.className =  classElement +' is-valid'
+
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			schoolIdFeedback.push('Completar el campo.')
+		}
+		if(value.length < 10){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			schoolIdFeedback.push('La matrícula debe tener mínimo 10 caracteres.')
+		}
+		if(value.length > 11){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			schoolIdFeedback.push('La matrícula debe tener máximo 11 caracteres')
+		}
+		if(value){
+			const resp = await axiosapi.doGet('http://localhost:3001/student/verify/school/id/'+value).then((res) => {
 					return res.data
 				}).catch(() => {
 					swal.err()
 				})
-				console.log(resp);
 
 				if(resp > 0){
-					event.target.className =  classElement +' is-invalid'
+					target.className =  classElement +' is-invalid'
 					verifySchoolId = false
-					flagSchoolId = false
+					validated = false
 				}
+		}else{
+			validated = false
+		}
+
+		return validated
+	}
+
+	const validGrade = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-select"
+		gradeFeedback = []
+		target.className =  classElement +' is-valid'
+
+		if(!value){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			gradeFeedback.push('Selecciona un grado.')
+		}
+
+		return validated
+	}
+
+	const validGroup = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		value = value.toUpperCase()
+		student.group = value
+		groupFeedback = []
+		target.className =  classElement +' is-valid'
+
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			groupFeedback.push('Completar el campo.')
+		}
+		if(!onlyLetters(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			groupFeedback.push('Introduzca solo letras.')
+		}
+		if(value.length != 1){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			groupFeedback.push('Introduzca solo 1 letra.')
+		}
+
+		return validated
+	}
+
+	const validDivision = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-select"
+		divisionFeedback = []
+		target.className =  classElement +' is-valid'
+
+		if(!value){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			divisionFeedback.push('Selecciona una división académica.')
+		}
+
+		return validated
+	}
+
+	const validLevel = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-select"
+		levelFeedback = []
+		target.className =  classElement +' is-valid'
+
+		if(!value){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			levelFeedback.push('Selecciona un nivel académico.')
+		}
+
+		return validated
+	}
+	
+	const validCareer = (target) =>{
+		let validated = true
+		let value = target.value
+		let classElement = "form-select"
+		careerFeedback = []
+		target.className =  classElement +' is-valid'
+
+		if(!value){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			careerFeedback.push('Selecciona una carrera.')
+		}
+
+		return validated
+	}
+
+	const validPerEmail = async(target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		perEmailFeedback = []
+		verifyPerEmailExistence = true
+		target.className =  classElement +' is-valid'
+
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			perEmailFeedback.push('Completar el campo.')
+		}
+		if(!verifyEmail(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			perEmailFeedback.push('Ingrese un correo electrónico válido.')
+		}
+		if(value){
+			const resp = await axiosapi.doGet('/student/verify/email/existence/'+value).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${classElement} is-invalid`
+				verifyPerEmailExistence = false
 			}
-		})
+		}else{
+			validated = false
+		}
 
-		gradeElement.addEventListener('change', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagGrade = true
+		return validated
+	}
 
-			gradeFeedback = []
-			event.target.className =  classElement +' is-valid'
+	const validInstEmail = async(target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		instEmailFeedback = []
+		verifyEmailUserExistence = true
+		target.className =  classElement +' is-valid'
 
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				gradeFeedback.push('Selecciona un grado')
-				flagGrade = false
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			instEmailFeedback.push('Completar el campo.')
+		}
+		if(value.split('@')[1] != 'utez.edu.mx'){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			instEmailFeedback.push('El correo electrónico debe pertenecer al dominio @utez.edu.mx.')
+		}
+
+		if(value){
+			const resp = await axiosapi.doGet('/user/verify/email/existence/'+ value).then((res)=>{
+				return res.data
+			}).catch(() => {
+				swal.err()
+			})
+
+			if(resp > 0){
+				validated = false
+				target.className = `${classElement} is-invalid`
+				verifyEmailUserExistence = false
 			}
-		})
+		}else{
+			validated = false
+		}
 
-		groupElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagGroup = true
+		return validated
+	}
 
-			value = value.toUpperCase()
-			student.group = value
+	const validPassword1 = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		password1Feedback = []
+		target.className =  classElement +' is-valid'
 
-			groupFeedback = []
-			event.target.className =  classElement +' is-valid'
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			password1Feedback.push('Completar el campo.')
+		}
+		if(!verifyPasswordStrength(value)){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			password1Feedback.push('La contraseña debe tener mínimo 8 caracteres con una combinación de letras, números, caracteres especiales, letras minúsculas y mayúsculas')
+		}
 
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				groupFeedback.push('Completa el campo')
-				flagGroup = false
-			}
-			if(!onlyLetters(value)){
-				event.target.className =  classElement +' is-invalid'
-				groupFeedback.push('Introduzca solo letras')
-				flagGroup = false
-			}
-			if(value.length != 1){
-				event.target.className =  classElement +' is-invalid'
-				groupFeedback.push('Introduzca solo 1 letra')
-				flagGroup = false
-			}
-		})	
-		
-		divisionElement.addEventListener('change', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagDivision = true
+		return validated
+	}
 
-			divisionFeedback = []
-			event.target.className =  classElement +' is-valid'
+	const validPassword2 = (target) => {
+		let validated = true
+		let value = target.value
+		let classElement = "form-control"
+		password2Feedback = []
+		target.className =  classElement +' is-valid'
 
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				divisionFeedback.push('Selecciona una división académica')
-				flagDivision = false
-			}
-		})
+		if(!value || value == ' '){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			password2Feedback.push('Completar el campo.')
+		}
+		if(!verifyPasswordMatch()){
+			validated = false
+			target.className =  classElement +' is-invalid'
+			password2Feedback.push('Las contraseñas no coinciden.')
+		}
 
-		levelElement.addEventListener('change', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagLevel = true
+		return validated
+	}
 
-			levelFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				levelFeedback.push('Selecciona un nivel académico')
-				flagLevel = false
-			}
-		})
-
-		careerElement.addEventListener('change', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagCareer = true
-
-			careerFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				careerFeedback.push('Selecciona una carrera')
-				flagCareer = false
-			}
-		})
-
-		perEmailElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagPerEmail = true
-
-			perEmailFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				perEmailFeedback.push('Completa el campo')
-				flagPerEmail = false
-			}
-			if(!verifyEmail(value)){
-				event.target.className =  classElement +' is-invalid'
-				perEmailFeedback.push('Ingrese un correo electrónico válido')
-				flagPerEmail = false
-			}
-		})
-
-		instEmailElement.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagInstEmail = true
-
-			instEmailFeedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				instEmailFeedback.push('Completa el campo')
-				flagInstEmail = false
-			}
-			if(!verifyInstEmail(value)){
-				event.target.className =  classElement +' is-invalid'
-				instEmailFeedback.push('El correo electrónico debe pertenecer al dominio @utez.edu.mx')
-				flagInstEmail = false
-			}
-
-
-		})
-
-		password1Element.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagPass1 = true
-
-			password1Feedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				password1Feedback.push('Completa el campo')
-				flagPass1 = false
-			}
-			if(!verifyPasswordStrength(value)){
-				event.target.className =  classElement +' is-invalid'
-				password1Feedback.push('La contraseña debe tener mínimo 8 caracteres con una combinación de letras, números, caracteres especiales, letras minúsculas y mayúsculas')
-				flagPass1 = false
-			}
-		})
-
-		password2Element.addEventListener('input', (event) => {
-			let value = event.target.value
-			let classElement = "form-control"
-			flagPass2 = true
-
-			password2Feedback = []
-			event.target.className =  classElement +' is-valid'
-
-			if(!value || value == ' '){
-				event.target.className =  classElement +' is-invalid'
-				password2Feedback.push('Completa el campo')
-				flagPass2 = false
-			}
-			if(!verifyPasswordMatch()){
-				event.target.className =  classElement +' is-invalid'
-				password2Feedback.push('Las contraseñas no coinciden')
-				flagPass2 = false
-			}
-		})
-		
+	const listenerValidity = () =>{
+		nameElement.addEventListener('input', (event) => {validName(event.target)})
+		firstLastNameElement.addEventListener('input', (event) => {validFirstLastName(event.target)})
+		secondLastNameElement.addEventListener('input', (event) => {validSecondLastName(event.target)})
+		schoolIdElement.addEventListener('input', async(event) => {validSchoolId(event.target)})
+		gradeElement.addEventListener('change', (event) => {validGrade(event.target)})
+		groupElement.addEventListener('input', (event) => {validGroup(event.target)})
+		divisionElement.addEventListener('change', (event) => {validDivision(event.target)})
+		levelElement.addEventListener('change', (event) => {validLevel(event.target)})
+		careerElement.addEventListener('change', (event) => {validCareer(event.target)})
+		perEmailElement.addEventListener('input', async(event) => {validPerEmail(event.target)})
+		instEmailElement.addEventListener('input', async(event) => {validInstEmail(event.target)})
+		password1Element.addEventListener('input', (event) => {validPassword1(event.target)})
+		password2Element.addEventListener('input', (event) => {validPassword2(event.target)})
 	}
 
 	onMount(() => {
 		getLists();
-		validate()
-
-		//var forms = document.querySelectorAll('.needs-validation');
-		/*const test = document.querySelector('.password1');
-		test.addEventListener('change', (event)=>{
-			console.log('entra');
-		})*/
-
-		/*document.getElementById('password1').addEventListener('change', (event)=>{
-			
-			//event.target.required = true
-
-			console.log(event.target.validity.valid);
-			event.target.validity.valid = true
-
-			console.log(event.target.validity.valid);
-		})
-
-		Array.prototype.slice.call(forms).forEach(function (form) {
-			form.addEventListener(
-				'submit',
-				function (event) {
-					if (!verifyInstEmail()) {
-						var div = document.getElementById('institutional_email');
-
-						console.log(div.className);
-						div.className = 'form-control is-invalid';
-						//div.style.setProperty("border-color", "#dc3545");
-						div.style.cssText = `border-color:#dc3545;
-					background-image: url(data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e)!important;`;
-						//div.style.backgroundImage = "url('tuUrl')";
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					if (
-						!form.checkValidity() &&
-						!verifyPasswordMatch() &&
-						!verifyInstEmail() &&
-						!verifyPasswordStrength()
-					) {
-						//event.preventDefault()
-						event.stopPropagation();
-					}
-
-					if (
-						form.checkValidity() &&
-						verifyPasswordMatch() &&
-						verifyInstEmail() &&
-						verifyPasswordStrength()
-					) {
-						registerStudent();
-						clear();
-					}
-
-					form.classList.add('was-validated');
-				},
-				false
-			);
-		});*/
+		listenerValidity()
+		//validate()
 	});
 </script>
-
-<head>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
-	<link
-		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
-	/>
-</head>
 <main class="container py-5">
 	<a href="/login" class="text-decoration-none text-muted mx-1 fs-5"
 		><i class="fas fa-arrow-left" /> Regresar</a
@@ -558,7 +578,7 @@
 				<h3>¡Regístrate!</h3>
 			</div>
 		</div>
-		<form class="my-3" id="formulario">
+		<form class="my-3" on:submit="{(e)=>{e.preventDefault();checkCreateValidation();}}">
 			<div class="form-row">
 				<div class="row mb-1">
 					<div class="col-md-4 mb-3">
@@ -567,14 +587,14 @@
 						>
 						<input
 							bind:this="{nameElement}"
+							bind:value={student.name}
+							id="name"
+							placeholder="Ingresa tu nombre"
 							type="text"
 							class="form-control"
 							autocomplete="off"
-							id="name"
-							bind:value={student.name}
 							aria-label="Nombre"
-							placeholder="Ingresa tu nombre"
-							required
+							
 						/>
 						{#each nameFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -594,7 +614,6 @@
 							aria-label="Primer apellido"
 							placeholder="Ingresa tu primer apellido"
 							autocomplete="off"
-							required
 						/>
 						{#each firstLastNameFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -614,7 +633,6 @@
 							aria-label="Segundo apellido"
 							placeholder="Ingresa tu segundo apellido"
 							autocomplete="off"
-							required
 						/>
 						{#each secondLastNameFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -638,14 +656,13 @@
 							aria-label="Matricula"
 							placeholder="Ingresa tu matrícula"
 							autocomplete="off"
-							required
 						/>
 						{#each schoolIdFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
 						{/each}
 
 						{#if !verifySchoolId}
-							<div class="invalid-feedback mx-2">La matrícula ya está en uso</div>
+							<div class="invalid-feedback mx-2">La matrícula ya está en uso.</div>
 						{/if}
 					</div>
 					<div class="col-md-4 mb-3">
@@ -659,7 +676,6 @@
 							aria-label="Grado"
 							id="grade"
 							bind:value={student.id_qu_gr}
-							required
 						>
 							{#if grades.length > 0}
 								{#if student.id_qu_gr == ''}
@@ -677,7 +693,6 @@
 						{#each gradeFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
 						{/each}
-						<div class="invalid-feedback mx-2">Selecciona un grado</div>
 					</div>
 					<div class="col-md-4 mb-3">
 						<i class="fas fa-user-friends mx-2" aria-hidden="true" /><label
@@ -693,7 +708,6 @@
 							aria-label="Grupo"
 							placeholder="Ingresa tu grupo"
 							autocomplete="off"
-							required
 						/>
 						{#each groupFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -714,7 +728,6 @@
 							id="division"
 							bind:value={divisionSelected}
 							on:change={() => filterCareer()}
-							required
 						>
 							{#if divisions.length > 0}
 								{#if divisionSelected == ''}
@@ -748,7 +761,6 @@
 							id="level"
 							bind:value={levelSelected}
 							on:change={() => filterCareer()}
-							required
 						>
 							{#if academicLevels.length > 0}
 								{#if levelSelected == ''}
@@ -780,7 +792,6 @@
 							aria-label="Carrera"
 							id="career"
 							bind:value={student.id_career}
-							required
 						>
 							{#if careers.length > 0}
 								{#if student.id_career == ''}
@@ -818,11 +829,15 @@
 							aria-label="Correo personal"
 							placeholder="Ingresa tu correo personal"
 							autocomplete="off"
-							required
 						/>
 						{#each perEmailFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
 						{/each}
+						{#if !verifyPerEmailExistence}
+							<div class="invalid-feedback">
+								Correo electrónico en uso.
+							</div>
+						{/if}
 					</div>
 					<div class="col-md-6 mb-3">
 						<i class="fas fa-envelope mx-2" /><label for="institutional_email" class="form-label"
@@ -837,11 +852,16 @@
 							aria-label="Correo institucional"
 							placeholder="Ingresa tu correo institucional"
 							autocomplete="off"
-							required 
 						/>
 						{#each instEmailFeedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
 						{/each}
+
+						{#if !verifyEmailUserExistence}
+							<div class="invalid-feedback">
+								Correo electrónico en uso.
+							</div>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -860,10 +880,7 @@
 							autocomplete="off"
 							bind:value={student.password}
 							aria-label="Contraseña"
-							placeholder="Ingresa tu contraseña"
-							required
-							
-							
+							placeholder="Ingresa tu contraseña"	
 						/>
 						{#each password1Feedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -882,7 +899,6 @@
 							bind:value={repeatPasswod}
 							aria-label="Contraseña confirmacion"
 							placeholder="Confirma tu contraseña"
-							required
 						/>
 						{#each password2Feedback as i}
 							<div class="invalid-feedback mx-2">{i}</div>
@@ -890,8 +906,13 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="d-block">
+				<button type="submit" class="btn btn-primary"
+						><i class="fas fa-paper-plane" /> Registrarse
+				</button>
+			</div>
+
+			<!-- <div class="d-block">
 				{#if flagName && flagFirstLastName && flagSecondLastName && flagSchoolId && flagGrade && flagGroup && 
 					flagDivision && flagLevel && flagCareer && flagPerEmail && flagInstEmail && flagPass1 && flagPass2 && verifySchoolId}
 					<button type="submit" class="btn btn-primary"
@@ -903,29 +924,8 @@
 						><i class="fas fa-paper-plane" /> Registrarse</button
 					>
 				{/if}
-			</div>
+			</div> -->
 		</form>
 	</div>
 </main>
 
-<!--
-
-nombres
-primer apellido
-segundo apellido
-
-matricula
-Select de grado cuatrimestral
-grupo (sólo es texto no entidad)
-
-correo personal
-correo institucional (usuario)
-
-contraseña
-confirmar contraseña
-
-Select de division académica
-Select de nivel académico
-Select de carrera
-
--->
