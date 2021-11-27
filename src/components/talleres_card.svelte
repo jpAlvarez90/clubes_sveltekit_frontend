@@ -9,6 +9,7 @@
 				<div class=" overflow-hidden mb-1 position-relative" style="height: 6rem;">
                     <p class="card-text">Body</p>
                 </div>
+				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a href="#" class="">Ver mas</a>
 			</div>
 		</div>

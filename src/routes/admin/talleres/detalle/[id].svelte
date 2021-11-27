@@ -21,13 +21,16 @@
     export let id = 0
     const idWorkshop = id
 
-    const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
+    const TITQDELETE = "¿Está seguro que desea designar este instructor?"
 	const TITDELETED = "Eliminado"
 	const TXTDELETED = "El registro se ha eliminado exitosamente."
+    const TITQCREATE = "¿Está seguro que desea agregar este instructor?"
 	const TITCREATED = "Creado"
 	const TXTCREATED = "El registro se ha creado exitosamente."
-	const TITUPDATED = "Actualizado"
+    const TITUPDATED = "Actualizado"
 	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+    const TITWARNING = "Advertencia"
+    const TXTWARNING = "No puedes desasignar este instructor porque actualmente se encuentra impartiendo al menos un grupo."
 
     let isSending = false
     let searched = false
@@ -51,6 +54,15 @@
         cellphone: ""
 	}
     let instructors = {
+        search: '',
+		page: 1,
+		totalRecords: 0,
+		totalPages: 1,
+		limit: 0,
+		offset: 0,
+		rows: []
+    }
+    let instructorsAvailables = {
         search: '',
 		page: 1,
 		totalRecords: 0,
@@ -314,12 +326,100 @@
 			searching = false
 		})
     }
-    
+
+    const getInstructorsAvailables = ()=>{
+		axiosapi.doGet(`/instructor/get/in/workshop/${idWorkshop}`).then(res=>{
+			instructorsAvailables = res.data;
+		}).catch((err)=>{
+			swal.err()
+		}).finally(()=>{searched = false})
+    }
+
+    const getInstructorsAvailablesByPage = (page)=>{
+		let endpoint = `/instructor/get/in/workshop/${idWorkshop}?page=${page}`
+		if(searched){
+			endpoint += `&search=${wordSearched}`
+		}
+		axiosapi.doGet(endpoint).then(res=>{
+			instructorsAvailables = res.data;
+		}).catch((err)=>{
+			swal.err()
+		})
+    }
+
+    const getInstructorsAvailablesByPreviousPage = ()=>{
+        getInstructorsAvailablesByPage(instructorsAvailables.page-1)
+    }
+
+    const getInstructorsAvailablesByNextPage = ()=>{
+        getInstructorsAvailablesByPage(instructorsAvailables.page+1)
+    }
+
+    const getInstructorsAvailablesBySearch = ()=>{
+		searching = true
+		let endpoint = `/instructor/get/in/workshop/${idWorkshop}`
+		if(instructorsAvailables.search != undefined && instructorsAvailables.search != ""){
+			endpoint += `?search=${instructorsAvailables.search}`
+			searched = true
+			wordSearched = instructorsAvailables.search
+		}else{
+			searched = false
+		}
+		axiosapi.doGet(endpoint).then(res=>{
+			instructorsAvailables = res.data;
+		}).catch((err)=>{
+			swal.err()
+		}).finally(()=>{
+			searching = false
+		})
+    }
+
+    const addInstructor = (id)=>{
+        swal.concan('question',TITQCREATE).then(result=>{
+            if(result.isConfirmed){
+                axiosapi.doPost(`/instructor/add/workshop/${idWorkshop}`,{id}).then(res=>{
+                    swal.con('success',TITCREATED,TXTCREATED)
+                    getInstructorsAvailables()
+                    getInstructors()
+                }).catch(err=>{
+                    swal.err()
+                })
+            }
+        })
+    }
+
+    const removeInstructor = (id)=>{
+        swal.concan('question',TITQDELETE).then(result=>{
+            if(result.isConfirmed){
+                axiosapi.doGet(`/instructor/${id}/get/total/groups/workshop/${idWorkshop}`).then(res=>{
+                    if(typeof(res.data['total']) === "number"){
+                        if(res.data['total'] > 0){
+                            swal.con('warning',TITWARNING,TXTWARNING)
+                        }else{
+                            axiosapi.doDelete(`/instructor/${id}/remove/workshop/${idWorkshop}`).then(res=>{
+                                swal.con('success',TITDELETED,TXTDELETED)
+                                getInstructors()
+                                getInstructorsAvailables()
+                            }).catch(err=>{
+                                swal.err()
+                            })
+                        }
+                    }else{
+                        swal.err()
+                    }
+                }).catch(err=>{
+                    swal.err()
+                })
+            }
+        })
+    }
+
 
     onMount(()=>{
         getWorkshop()
         getInstructors()
         getTypes()
+        getInstructorsAvailables()
         listenerValidity()
     })
     
@@ -353,7 +453,7 @@
                     <img class="img-fluid rounded card" 
                     src="{workshop.image_url}" alt="imagen taller">
                 </div>
-                <div class="col-sm-12 col-md-8 col-lg-7 ">
+                <div class="col-sm-12 col-md-9 col-lg-7 ">
                     <div class="container gy-3">
                         <div class="row align-items-center ">
                             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-7 ">
@@ -370,17 +470,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-4 col-lg-2 ">
+                <div class="col-sm-12 col-md-3 col-lg-2 ">
                     <div class="container">
                         <div class="row g-2 justify-content-center">
-                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+                            <div class="col">
                                 <button bind:this="{btnShowHideWorkshopForm}" aria-controls="colap1 colap2" data-bs-target=".multi-collapse" data-bs-toggle="collapse" on:click="{()=>{clearWorkshop()}}" type="button" class="btn btn-outline-primary w-100">
                                     <i class="fa fa-edit"></i>
-                                </button>
-                            </div>
-                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
-                                <button type="button" class="btn btn-outline-danger w-100">
-                                    <i class="fa fa-trash-alt"></i>
                                 </button>
                             </div>
                         </div>
@@ -477,7 +572,7 @@
                 <div class="row gy-2 justify-content-between align-items-center">
                     <h2 class="col-md-4"><i class="fa fa-user-tie"></i> Instructores</h2>        
                     <div class="col-md-4">
-                        <button class="float-md-end btn btn-outline-success rounded-pill" >
+                        <button data-bs-toggle="modal" data-bs-target="#mo1" class="float-md-end btn btn-outline-success rounded-pill" >
                             <i class="fa fa-plus-circle"></i> Asignar
                         </button>
                     </div>
@@ -538,7 +633,7 @@
 										<button on:click="{()=>{getInstructor(ins.id)}}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
 											<i class="fas fa-eye"></i>
 										</button>
-										<button on:click="{()=>{ins.id}}" type="button" class="btn btn-outline-danger">
+										<button on:click="{()=>{removeInstructor(ins.id)}}" type="button" class="btn btn-outline-danger">
 											<i class="fas fa-trash-alt" />
 										</button>
 									</div>
@@ -595,6 +690,132 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Asignar Instructor -->
+	<div class="modal fade" id="mo1" tabindex="-1" aria-labelledby="mol1" aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-centered">
+			<div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mol1">
+                        <i class="fas fa-user-tie" /> Instructores Disponibles
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row justify-content-end">
+                            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-6 col-xxl-6">
+                                <div class="input-group mb-3">
+                                    {#if searched}
+                                        <button on:click="{()=>getInstructorsAvailables()}" class="btn btn-outline-success">
+                                            <i class="fas fa-sync-alt"></i> Mostrar todos
+                                        </button>
+                                    {/if}
+                                    <input on:keyup="{(e)=>{if(e.keyCode === 13){getInstructorsAvailablesBySearch()}}}" bind:value="{instructorsAvailables.search}" type="search" class="form-control" placeholder="Busca algo..." aria-label="Buscador" aria-describedby="button-search">
+                                    <button on:click="{()=>getInstructorsAvailablesBySearch()}" class="btn btn-outline-primary" type="submit" id="button-search">
+                                        {#if searching}
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Loading...</span>
+                                        {:else}
+                                            <i class="fas fa-search"></i>
+                                        {/if}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {#if instructorsAvailables.rows.length == 0}
+                        <Notrecords/>
+                    {:else}
+                    <div class="table-responsive">
+                        <table class="table table-stripped table-hover">
+                            <caption>
+                                Mostrando {instructorsAvailables.offset+1} - {
+                                    instructorsAvailables.offset+instructorsAvailables.limit>instructorsAvailables.totalRecords?instructorsAvailables.totalRecords:instructorsAvailables.offset+instructorsAvailables.limit
+                                    } de {instructorsAvailables.totalRecords} registros totales.
+                            </caption>
+                            <thead>
+                                <tr class="text-center">
+                                    <th>No.</th>
+                                    <th>Nombre</th>
+                                    <th>Correo Electrónico Institucional</th>
+                                    <th>Teléfono</th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#each instructorsAvailables.rows as ins,i}
+                                <tr class="text-center">
+                                    <td>{i+1}</td>
+                                    <td>{ins.name} {ins.first_last_name} {ins.second_last_name}</td>
+                                    <td>{ins.email}</td>
+                                    <td>{ins.cellphone}</td>
+                                    <td>
+                                        {#if ins.in_workshop === 1}
+                                            <span style="cursor: default;" class="p-2 fs-6 badge text-primary opacity-75 border border-primary">
+                                                <i class="fas fa-check-circle"></i> Asignado
+                                            </span>
+                                        {:else}
+                                            <button on:click="{()=>{addInstructor(ins.id)}}" class="fw-bold btn btn-outline-success">
+                                                <i class="fas fa-check-circle"></i> Asignar
+                                            </button>
+                                        {/if}
+                                    </td>
+                                </tr>
+                                {/each}
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav class="mt-3" aria-label="...">
+                        <ul class="pagination justify-content-end">
+                            {#if instructorsAvailables.page === 1}
+                                <li class="page-item disabled">
+                                    <!-- svelte-ignore a11y-invalid-attribute -->
+                                    <a class="page-link" href="">Anterior</a>
+                                </li>							
+                            {:else}
+                                <li class="page-item">
+                                    <!-- svelte-ignore a11y-invalid-attribute -->
+                                    <a on:click="{()=>getInstructorsAvailablesByPreviousPage()}" class="page-link" href="">Anterior</a>
+                                </li>
+                            {/if}
+                            {#each Array.from({ length: instructorsAvailables.totalPages }, (_, i) => 1 + (i * 1)) as item}
+                                {#if instructorsAvailables.page == item}
+                                    <li class="page-item active" aria-current="page">
+                                        <!-- svelte-ignore a11y-invalid-attribute -->
+                                        <a class="page-link" href="">{item}</a>
+                                    </li>	
+                                {:else}
+                                    <li class="page-item" aria-current="page">
+                                        <!-- svelte-ignore a11y-invalid-attribute -->
+                                        <a class="page-link" 
+                                        on:click="{()=>getInstructorsAvailablesByPage(item)}" 
+                                        href=""
+                                        >{item}</a>
+                                    </li>	
+                                {/if}
+                            {/each}
+                            {#if instructorsAvailables.page === instructorsAvailables.totalPages}
+                                <li class="page-item disabled">
+                                    <!-- svelte-ignore a11y-invalid-attribute -->
+                                    <a class="page-link" href="">Siguiente</a>
+                                </li>							
+                            {:else}
+                                <li class="page-item">
+                                    <!-- svelte-ignore a11y-invalid-attribute -->
+                                    <a on:click="{()=>getInstructorsAvailablesByNextPage()}" class="page-link" href="">Siguiente</a>
+                                </li>
+                            {/if}
+                        </ul>
+                    </nav>
+                    {/if}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
+                </div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Modal Instructor -->
 	<div class="modal fade" id="mo2" tabindex="-1" aria-labelledby="mol2" aria-hidden="true">
