@@ -111,24 +111,26 @@
 					<Notrecords />
 				{:else}
                 <div class="container">
-                    {#each workshops.rows as w}
-                        <div class="col-md-6 col-lg-4 g-3 mb-3">
-                            <div class="card h-100">
-                                <img src="{w.image_url}" alt="Taller" class="card-img-top">
-                                <div class="card-body">
-                                    <h5 class="card-title text-uppercase">{w.name}</h5>
-                                    <h6 class="card-subtitle mb-2 text-muted">{w.type}</h6>
-                                    <p class="card-text withGradient">
-                                        {w.description.slice(0,300)}...
-                                    </p>
-                                </div>
-                                <div class="card-footer bg-transparent">
-                                    <!-- svelte-ignore a11y-invalid-attribute -->
-                                    <a class="float-end my-2" href="" on:click="{()=>getWorkshopDetails(w.id)}">Ver horarios...</a>
-                                </div>
-                            </div>
-                        </div>
-                    {/each}
+					<div class="row">
+						{#each workshops.rows as w}
+							<div class="col-md-6 col-lg-4 g-3 mb-3">
+								<div class="card h-100">
+									<img src="{w.image_url}" alt="Taller" class="card-img-top">
+									<div class="card-body">
+										<h5 class="card-title text-uppercase">{w.name}</h5>
+										<h6 class="card-subtitle mb-2 text-muted">{w.type}</h6>
+										<p class="card-text withGradient">
+											{w.description.slice(0,300)}...
+										</p>
+									</div>
+									<div class="card-footer bg-transparent">
+										<!-- svelte-ignore a11y-invalid-attribute -->
+										<a class="float-end my-2" href="" on:click="{()=>getWorkshopDetails(w.id)}">Ver horarios...</a>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
                 </div>
 				<nav aria-label="...">
 					<ul class="pagination justify-content-end">
