@@ -1,4 +1,6 @@
 <script>
+import { goto } from '$app/navigation';
+
 	import { onMount } from 'svelte'
 	import Notrecords from './../components/notrecords.svelte'
 	import axiosapi from './../utils/axiosapi'
@@ -66,7 +68,7 @@
 	}
 
 	const getWorkshopDetails = (id)=>{
-		alert(`id: ${id}`)
+		goto(`/talleres/grupos/${id}`)
 	}
 
 
