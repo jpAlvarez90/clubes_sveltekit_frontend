@@ -26,8 +26,8 @@
                     ¡Adéntrate en la comunidad estudiantil y participa ya!
                 </p>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                    <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">¡Regístrate ahora!</button>
-                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">Ver talleres</button>
+                    <a href="/registro" type="button" class="btn btn-primary btn-lg px-4 me-md-2">¡Regístrate ahora!</a>
+                    <a href="/talleres" type="button" class="btn btn-outline-secondary btn-lg px-4">Ver talleres</a>
                 </div>
                 </div>
             </div>

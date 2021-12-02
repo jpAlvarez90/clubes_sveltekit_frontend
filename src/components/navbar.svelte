@@ -1,23 +1,50 @@
 <script>
 	import { browser } from "$app/env";
 	import { goto } from '$app/navigation';
-	//import logoUT from '$lib/assets/img/LOGO_UTEZ.png'
+	import swal from './../utils/sweetalert2'
 	let logoUT = "/img/LOGO_BLANCO2016.png"
 	let logoDeportes = "/img/HALCÓN_BLANCO2016.png"
 
-	let hasToken;
-	let isAdmin;
+	const TITLOGOUT = "¿Está seguro que desea cerrar sesión?"
+
+
+	let hasToken = false
+	let isAdmin = false
+	let isInstructor = false
+	let isStudent = false
 	if (browser){
-		hasToken = localStorage.getItem("token");
-		isAdmin = localStorage.getItem("ROLE");
+		if(localStorage.getItem("token") != null){
+			hasToken = true
+			switch (localStorage.getItem("ROLE").toUpperCase()) {
+				case "ADMIN":
+					isAdmin = true
+					break;
+				case "INSTRUCTOR":
+					isInstructor = true
+					break;
+				case "STUDENT":
+					isStudent = true
+					break;
+				default:
+					hasToken = false
+					break;
+			}
+		}
 	}
 
 	const logout = () => {
-		localStorage.removeItem('token');
-		localStorage.removeItem('ROLE');
-		localStorage.removeItem('user');
-		goto('/');
-		location.reload();
+		swal.concan('question',TITLOGOUT).then(result=>{
+			if(result.isConfirmed){
+				localStorage.removeItem('token');
+				localStorage.removeItem('ROLE');
+				localStorage.removeItem('user');
+				hasToken = false
+				isAdmin = false
+				isStudent = false
+				isInstructor = false
+				goto('/');
+			}
+		})
 	}
 </script>
 
@@ -51,7 +78,7 @@
 				<a class="nav-link " href="/talleres">Talleres</a>
 			</div>
 			
-			{#if hasToken && isAdmin == 'ADMIN'}
+			{#if hasToken && isAdmin}
 			<ul class="navbar-nav  ">
 				<li class="nav-item dropdown ">
 					<a
@@ -115,7 +142,62 @@
 							</a>
 						</li>
 						<li>
-							<a class="dropdown-item" on:click="{()=>{logout()}}" href="/">
+							<!-- svelte-ignore a11y-invalid-attribute -->
+							<a class="dropdown-item" on:click="{()=>{logout()}}" href="">
+								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			{:else if hasToken && isInstructor}
+			<ul class="navbar-nav  ">
+				<li class="nav-item dropdown ">
+					<a
+						class="nav-link dropdown-toggle "
+						id="navbarDarkDropdownMenuLink"
+						role="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<i class="fas fa-user-circle"></i> Instructor
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-blue-2" aria-labelledby="navbarDarkDropdownMenuLink">
+						<li>
+							<a class="dropdown-item" href="/instructor/panel">
+								<i class="fas fa-user"></i> Perfil
+							</a>
+						</li>
+						<li>
+							<!-- svelte-ignore a11y-invalid-attribute -->
+							<a class="dropdown-item" on:click="{()=>{logout()}}" href="">
+								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			{:else if hasToken && isStudent}
+			<ul class="navbar-nav  ">
+				<li class="nav-item dropdown ">
+					<a
+						class="nav-link dropdown-toggle "
+						id="navbarDarkDropdownMenuLink"
+						role="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<i class="fas fa-user-circle"></i> Alumno
+					</a>
+					<ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-blue-2" aria-labelledby="navbarDarkDropdownMenuLink">
+						<li>
+							<a class="dropdown-item" href="/student/panel">
+								<i class="fas fa-user"></i> Perfil
+							</a>
+						</li>
+						<li>
+							<!-- svelte-ignore a11y-invalid-attribute -->
+							<a class="dropdown-item" on:click="{()=>{logout()}}" href="">
 								<i class="fas fa-sign-out-alt"></i> Cerrar sesión
 							</a>
 						</li>
@@ -124,7 +206,10 @@
 			</ul>
 			{:else}
 			<div class="navbar-nav">
-				<a class="nav-link " href="/login"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a>
+				<a class="nav-link " href="/registro"><i class="fas fa-user-plus"></i> Registrarse</a>
+			</div>
+			<div class="navbar-nav">
+				<a class="nav-link " href="/login"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
 			</div>
 			{/if}
 		</div>
