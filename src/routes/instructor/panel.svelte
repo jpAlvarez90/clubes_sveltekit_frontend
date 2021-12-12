@@ -8,97 +8,35 @@
     import swal from '/src/utils/sweetalert2'
     import srcIcon from '/static/img/HALCÓN_2016.png'
 
+    const TITQDELETE = "¿Está seguro que desea eliminar este registro?"
+	const TITDELETED = "Eliminado"
+	const TXTDELETED = "El registro se ha eliminado exitosamente."
+	const TITCREATED = "Creado"
+	const TXTCREATED = "El registro se ha creado exitosamente."
+	const TITUPDATED = "Actualizado"
+	const TXTUPDATED = "El registro se ha actualizado exitosamente."
+    
+
     let instructor = {
         id: 0,
-        name: "José Manuel Augusto",
-        first_last_name: "Denegree Vaught",
-        second_last_name: "Alcocer",
-        personal_email: "cruzbeltrandaniel@gmail.com",
-        email: "20183ti009@utez.edu.mx",
-        phone: "77713771137",
-        cellphone: "77720189854"
+        name: "",
+        first_last_name: "",
+        second_last_name: "",
+        personal_email: "",
+        email: "",
+        phone: "",
+        cellphone: ""
     }
-    let workshops = [
-        {
-            id:1,
-            name:"Ajedrez",
-            description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat autem eos tenetur repudiandae tempora harum nam? Repudiandae quia labore quisquam, est qui at animi ducimus consequatur accusantium. Expedita, ad tempora!",
-            type:"Deportivo",
-            selected: "border-bottom rounded border-5 border-white",
-            image_url:"https://www.elvigia.net/u/fotografias/m/2018/8/29/f608x342-383141_412864_0.jpg"
-        },
-        {
-            id:2,
-            name:"Futbol",
-            description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat autem eos tenetur repudiandae tempora harum nam? Repudiandae quia labore quisquam, est qui at animi ducimus consequatur accusantium. Expedita, ad tempora!",
-            type:"Deportivo",
-            selected: "border-bottom rounded border-5 border-white",
-            image_url:"https://radiomaria.org.ar/contenido/uploads/sites/3/2019/06/escuelita-1.jpg"
-        },
-        {
-            id:3,
-            name:"Volleyball",
-            description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat autem eos tenetur repudiandae tempora harum nam? Repudiandae quia labore quisquam, est qui at animi ducimus consequatur accusantium. Expedita, ad tempora!",
-            type:"Deportivo",
-            selected: "border-bottom rounded border-5 border-white",
-            image_url:"https://colegioteo.cl/imagenes/noticias/550x600/foto_Voleibol.jpg"
-        },
-        {
-            id:4,
-            name:"Taekwondo",
-            description:"Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat autem eos tenetur repudiandae tempora harum nam? Repudiandae quia labore quisquam, est qui at animi ducimus consequatur accusantium. Expedita, ad tempora!",
-            type:"Deportivo",
-            selected: "border-bottom rounded border-5 border-white",
-            image_url:"https://www.cetys.mx/gozorros/wp-content/uploads/2020/09/MG_3445-e1599457036725.jpg"
-        }
-    ]
-    let groups = [
-        {
-            id:1,
-            name: "A",
-            minimum: 5,
-            maximum: 10,
-            schedule: "Lunes a de la tarde a las 6 de la tarde a las 66 de la tarde a las 6 de la tarde",
-
-        },
-        {
-            id:2,
-            name: "B",
-            minimum: 5,
-            maximum: 10,
-            schedule: "Lunes a las 6 de la tarde a las 6 de la tarde a las 6 de la tarde a las 6 de la tardla tarde",
-
-        },
-        {
-            id:3,
-            name: "C",
-            minimum: 5,
-            maximum: 10,
-            schedule: "Lunes a las 6 de la tarde a las 6 de la tarde a las 6 de la tarde a las 6 de la tarde",
-
-        },
-        {
-            id:4,
-            name: "D",
-            minimum: 5,
-            maximum: 10,
-            schedule: "Lunes a las 6 de la tarde a las 6 de la tarde a las 6 de la tarde a las 6 de la tarde",
-
-        },
-        {
-            id:5,
-            name: "E",
-            minimum: 5,
-            maximum: 10,
-            schedule: "Lunes a las 6 drde a las 6 de la tarde a las 6 de la tarde",
-
-        }
-    ]
+    let workshops = []
+    let groups = []
 
     let isEdit = false
     let dGroup = "d-none"
     let nameWorkshop = ""
     let typeWorkshop = ""
+    let idWorkshop = 0
+    let btnclearprofile
+    let btnclearpassword
     let closemodalcreate
 
     let elementName
@@ -129,6 +67,8 @@
     let fbGMin = []
     let elementGMax
     let fbGMax = []
+    let elementGSchedule
+    let fbGSchedule = []
     let elementGCloseDate
     let fbGCloseDate = []
     let elementGStartDate
@@ -286,7 +226,7 @@
 			fbEmail.push("El correo electrónico debe pertenecer al dominio @utez.edu.mx.")
 		}
 
-		if(v){
+		/*if(v){
 			const resp = await axiosapi.doGet('/user/verify/email/existence/'+ v).then((res)=>{
 				return res.data
 			}).catch(() => {
@@ -300,7 +240,7 @@
 			}
 		}else{
 			validated = false
-		}
+		}*/
         
 
 		return validated
@@ -327,7 +267,7 @@
 			fbPersonalEmail.push("El correo electrónico es demasiado largo.")
 		}
 
-		if(v){
+		/*if(v){
 			let obj = {
 				flag : "email",
 				data: v
@@ -346,7 +286,7 @@
 			}
 		}else{
 			validated = false
-		}
+		}*/
 
 		return validated
 	}
@@ -372,7 +312,7 @@
 			fbPhone.push("El número telefónico es demasiado largo.")
 		}
 
-		if(v){
+		/*if(v){
 			let obj = {
 				flag : "phone",
 				data: v
@@ -391,7 +331,7 @@
 			}
 		}else{
 			validated = false
-		}
+		}*/
 
 		return validated
 	}
@@ -417,7 +357,7 @@
 			fbCellphone.push("El número telefónico es demasiado largo (más de 20 caracteres).")
 		}
 
-		if(v){
+		/*if(v){
 			let obj = {
 				flag : "cellphone",
 				data: v
@@ -436,7 +376,7 @@
 			}
 		}else{
 			validated = false
-		}
+		}*/
 
 		return validated
 	}
@@ -547,13 +487,55 @@
         ok = validConfirmNewPassword(elementConfirmNewPassword) && ok
 
         if(ok){
-            alert('ok (:')
+            updatePass()
+            btnclearpassword.click()
         }
 
     }
 
-    const checkGroupValidation = ()=>{
+    const checkProfileValidity = ()=>{
+        let ok = true
+        ok = validName(elementName) && ok
+        ok = validLastname(elementLastname) && ok
+        ok = validSecondLastname(elementSecondLastname) && ok
+        ok = validEmail(elementEmail) && ok
+        ok = validPersonalEmail(elementPersonalEmail) && ok
+        ok = validPhone(elementPhone) && ok
+        ok = validCellphone(elementCellphone) && ok
 
+        if(ok){
+            updateProfile()
+            btnclearprofile.click()
+        }
+    }
+
+    const checkGroupValidation = ()=>{
+        let ok = true;
+
+        if(ok){
+            saveGroup()
+            closemodalcreate.click()
+        }
+    }
+
+    const saveGroup = ()=>{
+        let data = {
+            name: elementGName.value,
+            minimum: elementGMin.value,
+            maximum: elementGMax.value,
+            schedule: elementGSchedule.value,
+            id_instructor: instructor.id,
+            id_workshop: idWorkshop,
+            closing_date: elementGCloseDate.value,
+            start_date: elementGStartDate.value,
+            final_date: elementGFinalDate.value
+        }
+        axiosapi.doPost('/workshop/group/save',data).then(res=>{
+            getGroups(data.id_workshop)
+            swal.con('success',TITCREATED,TXTCREATED)
+        }).catch(err=>{
+            swal.err()
+        })
     }
 
 	const listenerValidity = ()=>{
@@ -583,14 +565,88 @@
         workshops[i].selected = elementClass
         nameWorkshop = workshops[i].name
         typeWorkshop = workshops[i].type
+        idWorkshop = workshops[i].id
         setTimeout(()=>{
             location.href = "#grupos"
         },100)
 
+        getGroups(workshops[i].id)
+
+    }
+
+    const getGroups = (idWorkshop)=>{
+        let user = JSON.parse(localStorage.getItem('user')!=null?localStorage.getItem('user'):"{}")
+        let data = {
+            id_user: user['idUser'],
+            id_workshop: idWorkshop
+        }
+        if(data.id_user){
+            axiosapi.doPost(`/instructor/get/groups`,data).then(res=>{
+                groups = res.data
+            }).catch(err=>{
+                swal.err()
+            })
+        }
+    }
+
+    const getProfile = ()=>{
+        let user = JSON.parse(localStorage.getItem('user'))
+
+        if(user && user['idUser']){
+            axiosapi.doGet(`/instructor/profile/${user['idUser']}`).then(res=>{
+                instructor = res.data['instructor']
+                workshops = res.data['workshops']
+            }).catch(err=>{
+                swal.err()
+            })
+        }else{
+            swal.err()
+        }
+    }
+
+    const updateProfile = ()=>{
+        let user = JSON.parse(localStorage.getItem('user')!=null?localStorage.getItem('user'):"{}")
+        let data = {
+            id_user: user['idUser'],
+            name: elementName.value,
+            first_last_name: elementLastname.value,
+            second_last_name: elementSecondLastname.value,
+            email: elementEmail.value,
+            personal_email: elementPersonalEmail.value,
+            phone: elementPhone.value,
+            cellphone: elementCellphone.value
+        }
+
+        if(data.id_user){
+            axiosapi.doPut(`/instructor/profile/update`,data).then(res=>{
+                swal.con('success',TITUPDATED,TXTUPDATED)
+                getProfile()
+            }).catch(err=>{
+                swal.err()
+            })
+        }
+        
+    }
+
+    const updatePass = ()=>{
+        let user = JSON.parse(localStorage.getItem('user')!=null?localStorage.getItem('user'):"{}")
+        let data = {
+            id_user: user['idUser'],
+            currentPassword: elementCurrentPassword.value,
+            newPassword: elementNewPassword.value
+        }
+        if(data.id_user){
+            axiosapi.doPut(`/user/password/update`,data).then(res=>{
+                swal.con('success',TITUPDATED,TXTUPDATED)
+            }).catch(err=>{
+                swal.err()
+            })
+        }
     }
 
     onMount(()=>{
         listenerValidity()
+        getProfile()
     })
 
 </script>
@@ -683,7 +739,7 @@
                             </div>
                         </div>
                         <div id="collap2" class="collapse multi-collapse ck-1">
-                            <form on:submit="{(e)=>{e.preventDefault()}}">
+                            <form on:submit="{(e)=>{e.preventDefault();checkProfileValidity()}}">
                                 <div class="container">
                                     <div class="row g-3 mb-3">
                                         <div class="col-md-6">
@@ -793,12 +849,12 @@
                                     <hr>
                                     <div class="row g-3 mb-3">
                                         <div class="col-md-6">
-                                            <button on:click="{()=>{clearProfile()}}" class="btn btn-secondary w-100" data-bs-toggle="collapse" data-bs-target=".ck-1" aria-expanded="false" aria-controls="collap1 collap2">
+                                            <button bind:this="{btnclearprofile}" type="button" on:click="{()=>{clearProfile()}}" class="btn btn-secondary w-100" data-bs-toggle="collapse" data-bs-target=".ck-1" aria-expanded="false" aria-controls="collap1 collap2">
                                                 <i class="fa fa-times"></i> Cancelar
                                             </button>
                                         </div>
                                         <div class="col-md-6">
-                                            <button class="btn btn-primary w-100">
+                                            <button type="submit" class="btn btn-primary w-100">
                                                 <i class="fa fa-save"></i> Guardar
                                             </button>
                                         </div>
@@ -847,12 +903,12 @@
                                     <hr>
                                     <div class="row g-3 mb-3">
                                         <div class="col-md-6">
-                                            <button type="button" on:click="{()=>{clearPassword()}}" class="btn btn-secondary w-100" data-bs-toggle="collapse" data-bs-target=".ck-2" aria-expanded="false" aria-controls="collap1 collap3">
+                                            <button bind:this="{btnclearpassword}" type="button" on:click="{()=>{clearPassword()}}" class="btn btn-secondary w-100" data-bs-toggle="collapse" data-bs-target=".ck-2" aria-expanded="false" aria-controls="collap1 collap3">
                                                 <i class="fa fa-times"></i> Cancelar
                                             </button>
                                         </div>
                                         <div class="col-md-6">
-                                            <button type="submit" class="btn btn-primary w-100">
+                                            <button  type="submit" class="btn btn-primary w-100">
                                                 <i class="fa fa-save"></i> Guardar
                                             </button>
                                         </div>
@@ -891,10 +947,10 @@
         <div class="row {dGroup}">
             <div class="container main-card rounded border px-4 py-4 mb-4">
                 <div class="row g-2">
-                    <div id="grupos" class="col-sm-6 text-center text-sm-start">
+                    <div id="grupos" class="col-sm-10 text-center text-sm-start">
                         <h2><i class="fa fa-users"></i> Grupos - {nameWorkshop} <span class="h4 text-muted">| {typeWorkshop}</span></h2>
                     </div>
-                    <div class="col-sm-6 text-center">
+                    <div class="col-sm-2 text-center">
                         <button class="btn btn-outline-success rounded-pill float-sm-end" data-bs-toggle="modal" data-bs-target="#mo1">
                             <i class="fa fa-plus-circle"></i> Nuevo
                         </button>
@@ -1000,6 +1056,24 @@
 								{/each}
 							</div>
                             <div class="col-12">
+								<label for="gschedule" class="form-label">
+									<i class="fas fa-calendar-alt"></i> Horario
+								</label>
+								<input
+									bind:this="{elementGSchedule}"
+									id="gschedule"
+									type="text"
+									class="form-control"
+									autocomplete="off"
+                                    placeholder="Horario"
+								/>
+								{#each fbGSchedule as item}
+									<div class="invalid-feedback">
+										{item}
+									</div>
+								{/each}
+							</div>
+                            <div class="col-12">
 								<label for="gclosedate" class="form-label">
 									<i class="fas fa-calendar-alt"></i> Fecha límite de inscripción
 								</label>
@@ -1016,7 +1090,7 @@
 									</div>
 								{/each}
 							</div>
-                            <div class="col-12">
+                            <div class="col-md-6">
 								<label for="gstartdate" class="form-label">
 									<i class="fas fa-calendar-alt"></i> Fecha de inicio
 								</label>
@@ -1033,9 +1107,9 @@
 									</div>
 								{/each}
 							</div>
-                            <div class="col-12">
+                            <div class="col-md-6">
 								<label for="gfinaldate" class="form-label">
-									<i class="fas fa-calendar-alt"></i> Fecha de inicio
+									<i class="fas fa-calendar-alt"></i> Fecha de fin
 								</label>
 								<input
 									bind:this="{elementGFinalDate}"

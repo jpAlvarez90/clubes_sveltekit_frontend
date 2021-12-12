@@ -44,25 +44,33 @@
         }
     }
 
-    // :::::::::: VALIDAR QUE EL ALUMNO NO ESTÉ YA REGISTRADO EN UN TALLER ::::::::::
-    // :::::::::: SÓLO PUEDE REGISTRARSE A UN TALLER POR PERIODO ::::::::::
-    const register = (id)=>{
+    const register = (id,closing_date)=>{
         let role = localStorage.getItem("ROLE")
         let user = localStorage.getItem("user")
 
         if(!role || !user){
             goto('/login')
         }else if (role === "STUDENT"){
-            swal.concan('question','¿Está seguro que desea inscribirse al grupo?').then(result=>{
-                if(result.isConfirmed){
-                    user = JSON.parse(user)
-                    axiosapi.doPost(`/workshop/group/register`,{id_user:user['idUser'],id_group:id}).then(res=>{
-                        swal.con('success','Registrado','Inscripción completeada.')
-                        goto('/student/panel')
-                    }).catch(err=>{
-                        swal.err()
+            user = JSON.parse(user)
+            let id_user = user['idUser']
+            axiosapi.doGet(`/workshop/get/groups/student/${id_user}`).then(res=>{
+                let validDate = new Date(closing_date) > new Date()
+                if(res.data.total === 0 && validDate){
+                    swal.concan('question','¿Está seguro que desea inscribirse al grupo?').then(result=>{
+                        if(result.isConfirmed){
+                            axiosapi.doPost(`/workshop/group/register`,{id_user,id_group:id}).then(res=>{
+                                swal.con('success','Registrado','Inscripción completeada.')
+                                goto('/student/panel')
+                            }).catch(err=>{
+                                swal.err()
+                            })
+                        }
                     })
+                }else{
+                    swal.con('warning','Advertencia','Solamente puedes registrarte a un taller por periodo.')
                 }
+            }).catch(err=>{
+                swal.err()
             })
         }else{
             swal.con('warning','Advertencia','Su usuario no puede registrarse a un taller.')
@@ -125,7 +133,7 @@
                             {#each workshop.groups as item,i}
                                 <div class="col-md-6">
                                     <div class="card h-100">
-                                        <div class="card-body border-top border-5 border-{item.inscribed == item.maximum?'secondary':'primary'} rounded">
+                                        <div class="card-body border-top border-5 border-{(item.inscribed == item.maximum || new Date(item.closing_date) < new Date())?'secondary':'primary'} rounded">
                                             <h5 class="card-title fw-bold text-break upper-case">Grupo: {item.name}</h5>
                                             <h6 class="card-subtitle text-break mb-2 fst-italic text-muted">Instructor: {item.i_name} {item.i_first_last_name}</h6>
                                             <div class="row g-2">
@@ -161,7 +169,7 @@
                                                     Fecha límite de inscripción: {new Date(item.closing_date).toLocaleDateString()}
                                                 </div>
                                                 <div class="mt-2 mt-sm-0 mt-md-2">
-                                                    <button on:click="{()=>{register(item.id)}}" disabled="{item.inscribed == item.maximum}" class="btn btn-outline-{item.inscribed == item.maximum?'secondary':'primary'}">
+                                                    <button on:click="{()=>{register(item.id,item.closing_date)}}" disabled="{item.inscribed == item.maximum || new Date(item.closing_date) < new Date()}" class="btn btn-outline-{(item.inscribed == item.maximum || new Date(item.closing_date) < new Date())?'secondary':'primary'}">
                                                         <i class="fa fa-check-circle"></i> Inscribirse
                                                     </button>
                                                 </div>
