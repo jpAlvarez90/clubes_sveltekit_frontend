@@ -13,10 +13,35 @@
     import { onMount } from "svelte";
     import { goto } from '$app/navigation';
     import NotRecords from '/src/components/notrecords.svelte'
+    import axiosapi from '/src/utils/axiosapi'
+    import swal from '/src/utils/sweetalert2'
 
+    const TITQDELETE = "¿Está seguro que desea eliminar este grupo?"
+	const TITDELETED = "Eliminado"
+	const TXTDELETED = "El registro se ha eliminado exitosamente."
+	const TITCREATED = "Creado"
+	const TXTCREATED = "El registro se ha creado exitosamente."
+	const TITUPDATED = "Actualizado"
+	const TXTUPDATED = "El registro se ha actualizado exitosamente."
 
     export let id = 0
     const idGroup = id
+    let btncancel
+
+    let elementName
+    let fbName = []
+    let elementMin
+    let fbMin = []
+    let elementMax
+    let fbMax = []
+    let elementSchedule
+    let fbSchedule = []
+    let elementClosingDate
+    let fbClosingDate = []
+    let elementStartDate
+    let fbStartDate = []
+    let elementFinalDate
+    let fbFinalDate = []
 
 
     let group = {
@@ -24,83 +49,133 @@
         name: "A",
         minimum: 5,
         maximum: 10,
+        inscribed: 0,
         schedule: "Lunes a las 6 pm",
-        id_gr_co_da: 1,
         closing_date: "2021-11-20",
         start_date: "2021-12-20",
         final_date: "2021-12-30",
-        id_workshop: 1,
-        name_w: "Ajedrez",
-        description: "El ajedrez es un juego que tiene diversidad de matices. Por un lado es un juego de salón, el cual puede entretener a niños y adultos y su característica principal es que su triunfo se obtiene mediante la lógica y no gracias al azar, lo que ocurre en la mayoría de los juegos.",
-        image_url: "https://firebasestorage.googleapis.com/v0/b/workshop-aa29f.appspot.com/o/workshop%2F1637792975575?alt=media&token=dd7368c3-6bd4-4f8d-a5f8-a1488267ffad",
-        id_wo_ty: 1,
-        type: "Deportivo"
+        w_name: "Ajedrez",
+        w_description: "El ajedrez es un juego que tiene diversidad de matices. Por un lado es un juego de salón, el cual puede entretener a niños y adultos y su característica principal es que su triunfo se obtiene mediante la lógica y no gracias al azar, lo que ocurre en la mayoría de los juegos.",
+        w_image_url: "https://firebasestorage.googleapis.com/v0/b/workshop-aa29f.appspot.com/o/workshop%2F1637792975575?alt=media&token=dd7368c3-6bd4-4f8d-a5f8-a1488267ffad",
+        w_type: "Deportivo"
     }
 
-    let students = {
-        search: '',
-		page: 1,
-		totalRecords: 0,
-		totalPages: 1,
-		limit: 0,
-		offset: 0,
-		rows: [
-            {
-                id: 1,
-                name: "Daniel",
-                first_last_name: "Beltrán",
-                second_last_name: "Cruz",
-                school_id: "I20183TI009",
-                grupo: "A",
-                personal_email: "cruzbeltrandaniel@gmail.com",
-                email: "20183ti009@utez.edu.mx",
-                phone: "7773771137",
-                cellphone: "7772657497",
-                free: 1
-            },
-            {
-                id: 2,
-                name: "Daniel",
-                first_last_name: "Beltrán",
-                second_last_name: "Cruz",
-                school_id: "I20183TI009",
-                grupo: "A",
-                personal_email: "cruzbeltrandaniel@gmail.com",
-                email: "20183ti009@utez.edu.mx",
-                phone: "7773771137",
-                cellphone: "7772657497",
-                free: 2
-            },
-            {
-                id: 3,
-                name: "Daniel",
-                first_last_name: "Beltrán",
-                second_last_name: "Cruz",
-                school_id: "I20183TI009",
-                grupo: "A",
-                personal_email: "cruzbeltrandaniel@gmail.com",
-                email: "20183ti009@utez.edu.mx",
-                phone: "7773771137",
-                cellphone: "7772657497",
-                free: 3
-            }
-        ]
-    }
+    let students = []
 
     const getGroup = ()=>{
         if(idGroup == 0){
             goto("/instructor/panel")
         }else{
-            // axiosapi.doGet(`/workshop/get/${idWorkshop}`).then(res=>{
-            //     if(res.data === ""){
-            //         goto("/admin/talleres/panel")
-            //     }else{
-            //         workshop = res.data
-            //     }
-            // }).catch(err=>{
-            //     swal.err()
-            //     goto("/admin/talleres/panel")
-            // })
+            axiosapi.doGet(`/workshop/get/group/data/${idGroup}`).then(res=>{
+                console.log(res.data);
+                group = res.data['workshop']
+                students = res.data['inscriptions']
+            }).catch(err=>{
+                swal.err()
+                goto("/admin/talleres/panel")
+            })
+        }
+    }
+
+    const deleteGroup = ()=>{
+        swal.concan('question',TITQDELETE).then(result=>{
+            if(result.isConfirmed){
+                axiosapi.doDelete(`/workshop/group/delete/${idGroup}`).then(res=>{
+                    swal.con('success',TITDELETED,TXTDELETED)
+                    goto('/instructor/panel')
+                }).catch(err=>{
+                    swal.err()
+                })
+            }
+        })
+    }
+
+    const canRealese = (acc)=>{
+        return new Date(group.final_date) > new Date() && acc === 0
+    }
+
+    const deleteStudent = (i)=>{
+        let student = students[i]
+        swal.concan('question','¿Está seguro que desea eliminar este estudiante?').then(result=>{
+            if(result.isConfirmed){
+                axiosapi.doDelete(`/workshop/delete/student/group/${student.id}`).then(res=>{
+                    swal.con('success',TITDELETED)
+                    getGroup()
+                }).catch(err=>{
+                    swal.err()
+                })
+            }
+        })
+    }
+
+    const releaseStudent = (i)=>{
+        let student = students[i]
+        swal.concan('question','¿Está seguro de liberar a este alumno?').then(result=>{
+            if(result.isConfirmed){
+                axiosapi.doGet(`/workshop/release/student/group/${student.id}`).then(res=>{
+                    swal.con('success',TITUPDATED,TXTUPDATED)
+                    getGroup()
+                }).catch(err=>{
+                    swal.err()
+                })
+            }
+        })
+    }
+
+    const clearForm = ()=>{
+        let date
+        let classList = `form-control`
+        elementName.value = group.name
+        elementName.classList = classList
+        fbName = []
+        elementMin.value = group.minimum
+        elementMin.classList = classList
+        fbMin = []
+        elementMax.value = group.maximum
+        elementMax.classList = classList
+        fbMax = []
+        elementSchedule.value = group.schedule
+        elementSchedule.classList = classList
+        fbSchedule = []
+        date = new Date(group.closing_date).toISOString().split('T')[0]
+        elementClosingDate.value = date
+        elementClosingDate.classList = classList
+        fbClosingDate = []
+        date = new Date(group.start_date).toISOString().split('T')[0]
+        elementStartDate.value = date
+        elementStartDate.classList = classList
+        fbStartDate = []
+        date = new Date(group.final_date).toISOString().split('T')[0]
+        elementFinalDate.value = date
+        elementFinalDate.classList = classList
+        fbFinalDate = []
+    }
+
+    const updateGroup = ()=>{
+        let data = {
+            id:idGroup,
+            name: elementName.value,
+            minimum: elementMin.value,
+            maximum: elementMax.value,
+            schedule: elementSchedule.value,
+            closing_date: elementClosingDate.value,
+            start_date: elementStartDate.value,
+            final_date: elementFinalDate.value
+        }
+        axiosapi.doPost('/workshop/group/update',data).then(res=>{
+            swal.con('success',TITUPDATED,TXTUPDATED)
+            getGroup()
+        }).catch(err=>{
+            swal.err()
+        })
+    }
+    
+    const checkFormValidation = ()=>{
+        let ok = true
+
+        if(ok){
+            updateGroup()
+            btncancel.click()
         }
     }
 
@@ -129,25 +204,25 @@
         <hr>
         <div class="container main-card rounded border px-4 py-4 mb-4">
             <h2>
-                <i class="fa fa-chalkboard"></i> Datos del taller
+                <i class="fa fa-chalkboard"></i> Datos del grupo <button on:click="{()=>{deleteGroup()}}" disabled="{students.length > 0}" class="float-end btn btn-outline-danger" ><i class="fa fa-trash-alt"></i> </button>
             </h2>
             <hr>
             <div class="row">
                 <div class="col-12">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <img class="img-fluid rounded card" src="{group.image_url}" alt="Imagen del taller">
+                            <img class="img-fluid rounded card" src="{group.w_image_url}" alt="Imagen del taller">
                         </div>
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="d-flex flex-wrap">
-                                    <div class="h1 text-break align-self-center align-middle mx-2">{group.name_w}</div>
-                                    <div class="h2 text-break align-self-center align-middle mx-2 text-muted">| {group.type}</div>
+                                    <div class="h1 text-break align-self-center align-middle mx-2">{group.w_name}</div>
+                                    <div class="h2 text-break align-self-center align-middle mx-2 text-muted">| {group.w_type}</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <p>{group.description}</p>
+                                    <p>{group.w_description}</p>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +245,7 @@
                                     <div class="fw-bold">
                                         <i class="fa fa-list"></i> Inscritos
                                     </div>
-                                    <div>0/{group.maximum}</div>
+                                    <div>{group.inscribed}/{group.maximum}</div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="fw-bold">
@@ -196,24 +271,24 @@
                             <div class="row g-3">
                                 <div class="col-sm-12 col-md-10 order-1">
                                     <div class="fw-bold d-flex d-wrap align-items-center">
-                                        <span><i class="fa fa-users"></i> Fecha límite de inscripción</span> <div style="width: 1rem;height: 1rem;" class="mx-2 mt-1 rounded-circle border bg-success" ></div>
+                                        <span><i class="fa fa-users"></i> Fecha límite de inscripción</span> 
                                     </div>
-                                    <div>{group.closing_date}</div>
+                                    <div>{new Date(group.closing_date).toLocaleString().substring(0,10)}</div>
                                 </div>
                                 <div class="col-sm-6 order-3">
                                     <div class="fw-bold">
                                         <i class="fa fa-calendar-alt"></i> Fecha de inicio
                                     </div>
-                                    <div>{group.start_date}</div>
+                                    <div>{new Date(group.start_date).toLocaleString().substring(0,10)}</div>
                                 </div>
                                 <div class="col-sm-6 order-4">
                                     <div class="fw-bold">
                                         <i class="fa fa-users"></i> Fecha de fin
                                     </div>
-                                    <div>{group.final_date}</div>
+                                    <div>{new Date(group.final_date).toLocaleString().substring(0,10)}</div>
                                 </div>
                                 <div class="col-sm-12 col-md-2 order-md-2 order-last">
-                                    <button class="float-lg-end float-md-start w-100 btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collap1 collap2">
+                                    <button on:click="{()=>{clearForm()}}" class="float-lg-end float-md-start w-100 btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collap1 collap2">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                 </div>
@@ -222,7 +297,7 @@
                     </div>
                     <div id="colap2" class="collapse multi-collapse row gy-3">
                         <div class="col">
-                            <form on:submit="{(e)=>{e.preventDefault()}}">
+                            <form on:submit="{(e)=>{e.preventDefault();checkFormValidation()}}">
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6 border-start border-primary border-2">
                                     <div class="row g-2">
@@ -230,25 +305,25 @@
                                             <label class="form-label" for="gname">
                                                 <i class="fa fa-heading"></i> Grupo
                                             </label>
-                                            <input class="form-control" type="text" id="gname" autocomplete="off" placeholder="Grupo">
+                                            <input bind:this="{elementName}" class="form-control" type="text" id="gname" autocomplete="off" placeholder="Grupo">
                                         </div>
                                         <div class="col-sm-6 col-md-12 col-lg-6">
                                             <label class="form-label" for="gmin">
                                                 <i class="fa fa-users"></i> Mínimo de integrantes
                                             </label>
-                                            <input class="form-control" type="text" id="gmin" autocomplete="off" placeholder="Mínimo de integrantes">
+                                            <input bind:this="{elementMin}" class="form-control" type="text" id="gmin" autocomplete="off" placeholder="Mínimo de integrantes">
                                         </div>
                                         <div class="col-sm-6 col-md-12 col-lg-6">
                                             <label class="form-label" for="gmax">
                                                 <i class="fa fa-users"></i> Máximo de integrantes
                                             </label>
-                                            <input class="form-control" type="text" id="gmax" autocomplete="off" placeholder="Máximo de integrantes">
+                                            <input bind:this="{elementMax}" class="form-control" type="text" id="gmax" autocomplete="off" placeholder="Máximo de integrantes">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gschedule">
                                                 <i class="fa fa-clock"></i> Horario
                                             </label>
-                                            <input class="form-control" type="text" id="gschedule" autocomplete="off" placeholder="Horario">
+                                            <input bind:this="{elementSchedule}" class="form-control" type="text" id="gschedule" autocomplete="off" placeholder="Horario">
                                         </div>
                                     </div>
                                 </div>
@@ -258,26 +333,26 @@
                                             <label class="form-label" for="gclosedate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha límite de inscripción
                                             </label>
-                                            <input class="form-control" type="date" id="gclosedate">
+                                            <input bind:this="{elementClosingDate}" class="form-control" type="date" id="gclosedate">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gstartdate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha inicio
                                             </label>
-                                            <input class="form-control" type="date" id="gstartdate">
+                                            <input bind:this="{elementStartDate}" class="form-control" type="date" id="gstartdate">
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gfinishdate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha fin
                                             </label>
-                                            <input class="form-control" type="date" id="gfinishdate">
+                                            <input bind:this="{elementFinalDate}" class="form-control" type="date" id="gfinishdate">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row g-3">
                                 <div class="col-sm-6 col-md-4 offset-md-4 offset-lg-6 col-lg-3">
-                                    <button type="button" class="w-100 btn btn-secondary" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collap1 collap2">
+                                    <button bind:this="{btncancel}" on:click="{()=>{clearForm()}}" type="button" class="w-100 btn btn-secondary" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="collap1 collap2">
                                         <i class="fa fa-times"></i> Cancelar
                                     </button>
                                 </div>
@@ -302,7 +377,7 @@
             </div>
             <hr>
             <div class="row mt-3 gy-3">
-                {#if students.rows.length == 0}
+                {#if students.length == 0}
                     <NotRecords/>
                 {:else}
                 <div class="col-12">
@@ -316,21 +391,33 @@
                             <tr class="text-center">
                                 <th>No.</th>
                                 <th>Nombre</th>
+                                <th>Matrícula</th>
                                 <th>Correo Electrónico Institucional</th>
-                                <th>Teléfono Celular</th>
                                 <th>Opciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {#each students.rows as st,i}
+                            {#each students as st,i}
                             <tr class="text-center">
                                 <td>{i+1}</td>
                                 <td>{st.name} {st.first_last_name} {st.second_last_name}</td>
+                                <td>{st.school_id}</td>
                                 <td>{st.email}</td>
-                                <td>{st.cellphone}</td>
                                 <td>
 									<div class="btn-group" role="group">
-                                        {#if st.free == 1}
+                                        {#if st.accredited == 0}
+                                        <button on:click="{()=>{releaseStudent(i)}}" disabled="{canRealese(st.accredited)}" type="button" class="btn btn-outline-success">
+                                            <i class="fas fa-check-circle" /> 
+                                        </button>
+                                        <button on:click="{()=>{deleteStudent(i)}}" type="button" class="btn btn-outline-danger">
+                                            <i class="fas fa-trash-alt" /> 
+                                        </button>
+                                        {:else if st.accredited == 1}
+                                        <button disabled type="button" class="btn btn-outline-primary">
+                                            <i class="fas fa-check-circle" /> Liberado
+                                        </button>
+                                        {/if}
+                                        <!-- {#if st.free == 1}
                                             <button disabled type="button" class="btn btn-outline-success">
                                                 <i class="fas fa-check-circle" /> Liberar
                                             </button>
@@ -342,7 +429,7 @@
                                             <button disabled type="button" class="btn btn-outline-primary">
                                                 <i class="fas fa-check-circle" /> Liberado
                                             </button>
-                                        {/if}
+                                        {/if} -->
 									</div>
                                 </td>
                             </tr>
