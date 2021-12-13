@@ -15,6 +15,8 @@
     import NotRecords from '/src/components/notrecords.svelte'
     import axiosapi from '/src/utils/axiosapi'
     import swal from '/src/utils/sweetalert2'
+    import {jsPDF} from 'jspdf'
+    import autoTable from 'jspdf-autotable'
 
     const TITQDELETE = "¿Está seguro que desea eliminar este grupo?"
 	const TITDELETED = "Eliminado"
@@ -177,6 +179,52 @@
             updateGroup()
             btncancel.click()
         }
+    }
+
+    const downloadPDF = ()=>{
+        let rows = []
+        for(let i = 0; i<students.length;i++){
+            let row = {
+                number:i+1,
+                student: `${students[i].name} ${students[i].first_last_name} ${students[i].second_last_name}`
+            }
+            rows.push(row)
+        }
+        let columns = [
+            {title:"No.",dataKey:"number"},
+            {title:"Alumno",dataKey:"student"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+            {title:"*"},
+        ]
+
+        let doc = new jsPDF('p','pt')
+        doc.setFontSize(18)
+        doc.text("SIGETA - Sistema Gestión de Talleres UTEZ", 120, 40);
+        doc.setFontSize(11)
+        doc.text(
+            "Universidad Tecnológica Emiliano Zapata del estado de Morelos",
+            140,
+            55
+        )
+        doc.setTextColor(100)
+        doc.setFontSize(13)
+        doc.text("L     I     S     T     A", 245, 100);
+        doc.autoTable(columns, rows, {
+            margin: { top: 120 },
+            theme: "grid"
+        });
+        
+        doc.save("Lista.pdf")
+        
     }
 
     onMount(()=>{
@@ -381,7 +429,7 @@
                     <NotRecords/>
                 {:else}
                 <div class="col-12">
-                    <button class="float-end btn btn-outline-danger">
+                    <button on:click="{()=>{downloadPDF()}}" class="float-end btn btn-outline-danger">
                         <i class="fa fa-file-pdf"></i> Descargar
                     </button>
                 </div>

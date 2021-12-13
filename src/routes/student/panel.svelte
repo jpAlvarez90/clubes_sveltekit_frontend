@@ -38,6 +38,7 @@
     let divisions = []
     let levels = []
     let careers = []
+    
 
     let isEdit = false
     let dGroup = "d-none"
@@ -501,33 +502,38 @@
         let user = JSON.parse(localStorage.getItem('user'))
 
         if(user && user['idUser']){
-            // axiosapi.doGet(`/student/profile/${user['idUser']}`).then(res=>{
-            //     student = res.data['student']
-            //     groups = res.data['groups']
-            // }).catch(err=>{
-            //     swal.err()
-            // })
-            student = {
-                id: 0,
-                name: "Daniel",
-                first_last_name: "Beltrán",
-                second_last_name: "Cruz",
-                school_id: "20183ti009",
-                grupo: "A",
-                personal_email: "beltrancruz@gmail.com",
-                email: "20183ti009@utez.edu.mx",
-                id_divison: 0,
-                acronym_division: "DATIC",
-                id_academic_level: 0,
-                level_name: "LIC/ING",
-                id_career: 0,
-                acronym_career: "IDyGS",
-                id_grade: 0,
-                grade: "10"
-            }
+            axiosapi.doGet(`/student/get/profile/${user['idUser']}`).then(res=>{
+                student = res.data
+                getGroups(student.id)
+            }).catch(err=>{
+                swal.err()
+            })
         }else{
             swal.err()
         }
+    }
+
+    const getGroups = (idStudent)=>{
+        axiosapi.doGet(`/student/get/groups/${idStudent}`).then(res=>{
+            console.log(res.data);
+            groups = res.data
+        }).catch(err=>{
+            swal.err()
+        })
+    }
+
+    const getColorCard = (i)=>{
+        let start = new Date(groups[i].closing_date)
+        let final = new Date(groups[i].final_date)
+        let now = new Date()
+        let acc = groups[i].accredited
+        let str
+        if(now>start && now<final && acc == 0){
+            str = "primary"
+        }else{
+            str = acc==1?"success":"secondary"
+        }
+        return str
     }
 
     const updateProfile = ()=>{
@@ -573,13 +579,18 @@
     onMount(()=>{
         listenerValidity()
         getProfile()
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
     })
 
 </script>
 
 <main>
     <div class="main-card container-lg my-4 p-4 rounded border shadow">
-        <h1><i class="fa fa-list"></i> Panel</h1>
+        <h1><i class="fa fa-list " data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top"></i> Panel</h1>
         <hr>
         <div class="row">
             <div class="container main-card rounded border px-4 py-4 mb-4">
@@ -894,7 +905,25 @@
         </div>
         <div class="row">
             <div class="container main-card rounded border px-4 py-4 mb-4">
-                <h2><i class="fa fa-chalkboard"></i> Talleres</h2>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <h2>
+                        <i class="fa fa-chalkboard"></i> Talleres
+                    </h2>
+                    <div class="d-flex">
+                        <div data-bs-toggle="tooltip" data-bs-placement="top" title="Taller acreditado" 
+                        style="width: 2rem;height: 2rem;" 
+                        class="bg-success rounded-circle shadow me-2"></div>
+
+                        <div data-bs-toggle="tooltip" data-bs-placement="top" title="Taller no acreditado" 
+                        style="width: 2rem;height: 2rem;" 
+                        class="bg-secondary rounded-circle shadow me-2"></div>
+
+                        <div data-bs-toggle="tooltip" data-bs-placement="top" title="Taller en curso" 
+                        style="width: 2rem;height: 2rem;" 
+                        class="bg-primary rounded-circle shadow"></div>
+                    </div>
+                </div>
+                
                 <hr>
                 <div class="row g-3">
                     {#if groups.length === 0}
@@ -904,9 +933,27 @@
                             <div class="col-md-6 col-lg-4 g-3 mb-3">
                                 <div on:click="{()=>{}}" class="card h-100">
                                     <img  src="{item.image_url}" alt="Taller" class="card-img-top">
-                                    <div class="card-body {item.selected}">
-                                        <h5 class="card-title text-uppercase">{item.name}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{item.type}</h6>
+                                    <div class="card-body border-bottom border-5 border-{getColorCard(i)} rounded">
+                                        <h5 class="card-title text-uppercase">{item.w_name} - <span class="text-lowercase">{item.type}</span></h5>
+                                        <h6 class="card-subtitle mb-2 text-muted fst-italic border-bottom border-2 border-{getColorCard(i)} pb-3">{item.term} {item.year}</h6>
+                                        <div class="d-flex flex-wrap">
+                                            <div class="me-2 mb-2 text-{getColorCard(i)}">
+                                                <i class="fa fa-calendar-alt"></i> Inicio: {new Date(item.start_date).toLocaleString().substring(0,10)}
+                                            </div>
+                                            <div class="me-2 mb-2 text-{getColorCard(i)}">
+                                                <i class="fa fa-calendar-alt"></i> Fin: {new Date(item.final_date).toLocaleString().substring(0,10)}
+                                            </div>
+                                            <div class="me-2 mb-2 w-100">
+                                                <i class="fa fa-user"></i> Instructor:<br>{item.ins_name} {item.first_last_name} {item.second_last_name}
+                                            </div>
+                                            <div class="me-2 mb-2 w-100">
+                                                <i class="fa fa-users"></i> Grupo:<br>{item.g_name}
+                                            </div>
+                                            <div class="me-2">
+                                                <i class="fa fa-calendar"></i> Horario:<br>{item.schedule}
+                                            </div>
+                                        </div>
+                                        <div style="position:absolute;bottom:0;right:0;width: 2rem;height: 2rem;" class="mb-3 me-3 text-center text-white bg-{getColorCard(i)} rounded-circle shadow"></div>
                                     </div>
                                 </div>
                             </div>                           

@@ -25,6 +25,8 @@
     "firebase": "^9.4.0",
     "jquery": "^3.6.0",
     "jsdom": "^18.0.0",
+    "jspdf": "^2.4.0",
+    "jspdf-autotable": "^3.5.23",
     "validator": "^13.7.0"
   }
 }
