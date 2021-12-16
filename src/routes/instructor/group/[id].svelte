@@ -44,6 +44,8 @@
     let fbStartDate = []
     let elementFinalDate
     let fbFinalDate = []
+    let today = ''
+    let tomorrow = ''
 
 
     let group = {
@@ -151,6 +153,9 @@
         elementFinalDate.value = date
         elementFinalDate.classList = classList
         fbFinalDate = []
+
+        elementStartDate.disabled = false
+        elementFinalDate.disabled = false
     }
 
     const updateGroup = ()=>{
@@ -171,9 +176,200 @@
             swal.err()
         })
     }
+
+    // update valids
+    const validNameG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbName = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbName.push("El nombre no debe contener números o caracteres especiales, y debe empezar con mayúscula.")
+		}
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbName.push("Completar el campo.")
+        }
+		if(v.length > 50){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbName.push("El nombre debe contener máximo 50 caracteres.")
+		}
+		
+		return validated
+    }
+
+    const validMinG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbMin = []
+		target.className = `${elementClass} is-valid`
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbMin.push("Completar el campo.")
+        }
+        validMaxG(elementMax)
+		
+		return validated
+    }
+
+    const validMaxG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbMax = []
+		target.className = `${elementClass} is-valid`
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbMax.push("Completar el campo.")
+        }
+        if(elementMin.value != '' ){
+            if(parseInt(v) <= elementMin.value){
+                validated = false
+                target.className = `${elementClass} is-invalid`
+                fbMax.push("El máximo de integrantes debe ser mayor al mínimo de integrantes.")
+            }
+        }
+
+		return validated
+    }
+
+    const validScheduleG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbSchedule = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbSchedule.push("Completar el campo.")
+        }
+		if(v.length < 3 || v.length > 50){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbSchedule.push("El horario debe contener de 3 a 50 caracteres.")
+		}
+		
+		return validated
+    }
+
+    const validCloseDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbClosingDate = []
+		target.className = `${elementClass} is-valid`
+        dateTomorrow(v)
+
+        if(!v){
+            console.log('es menor');
+            validated = false
+            elementStartDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbClosingDate.push("Seleccione una fecha.")
+        }else{
+            if(v < today){
+                validated = false
+                elementStartDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbClosingDate.push("La fecha no puede ser atrasada.")
+            }else{
+                elementStartDate.disabled = false
+            }
+        }
+		
+		return validated
+    }
+
+    const validStartDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbStartDate = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v){
+            validated = false
+            elementFinalDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbStartDate.push("Seleccione una fecha.")
+        }else{
+            if(v < tomorrow){
+                validated = false
+                elementFinalDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbStartDate.push("La fecha debe ser mayor a la fecha límite de inscripción.")
+            }else{
+                elementFinalDate.disabled = false
+            }
+        }
+        
+		return validated
+    }
+
+    const validFinalDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbFinalDate = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v){
+            validated = false
+            elementFinalDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbFinalDate.push("Seleccione una fecha.")
+        }else{
+            if(v < tomorrow){
+                validated = false
+                elementFinalDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbFinalDate.push("La fecha debe ser mayor a la fecha límite de inscripción.")
+            }else{
+                elementFinalDate.disabled = false
+            }
+
+            if(v < elementStartDate.value){
+                validated = false
+                target.className = `${elementClass} is-invalid`
+                fbFinalDate.push("La fecha debe ser mayor a la fecha de inicio.")
+            }
+        }
+		
+		return validated
+    }
+
+    const listenerValidity = () => {
+        elementName.addEventListener('input', (e) => {validNameG(e.target)})
+        elementMin.addEventListener('input', (e) => {validMinG(e.target)})
+        elementMax.addEventListener('input', (e) => {validMaxG(e.target)})
+        elementSchedule.addEventListener('input', (e) => {validScheduleG(e.target)})
+        elementClosingDate.addEventListener('input', (e) => {validCloseDateG(e.target)})
+        elementStartDate.addEventListener('input', (e) => {validStartDateG(e.target)})
+        elementFinalDate.addEventListener('input', (e) => {validFinalDateG(e.target)})
+    }
     
     const checkFormValidation = ()=>{
         let ok = true
+        ok = validNameG(elementName) && ok
+        ok = validMinG(elementMin) && ok
+        ok = validMaxG(elementMax) && ok
+        ok = validScheduleG(elementSchedule) && ok
+        ok = validCloseDateG(elementClosingDate) && ok
+        ok = validStartDateG(elementStartDate) && ok
+        ok = validFinalDateG(elementFinalDate) && ok
 
         if(ok){
             updateGroup()
@@ -227,8 +423,63 @@
         
     }
 
+    const dateToday = () => {
+      var f = new Date();
+
+      var anio = f.getFullYear();
+      var _mes = f.getMonth();
+      var _dia = f.getDate();
+      _mes = _mes + 1;
+      var mes = "";
+      var dia = "";
+      if (_mes < 10) {
+        mes = "0" + _mes;
+      } else {
+        mes = _mes.toString();
+      }
+      if (_dia < 10) {
+        dia = "0" + _dia;
+      } else {
+        dia = _dia;
+      }
+
+      var fecha = anio + "-" + mes + "-" + dia;
+      console.log(fecha);
+      today = fecha;
+      dateTomorrow(fecha)
+    }
+
+    const dateTomorrow = (date) => {
+        const hoy = new Date(date)
+        const mañana = new Date(hoy)
+        mañana.setDate(mañana.getDate() + 2)
+
+        var anio = mañana.getFullYear();
+        var _mes = mañana.getMonth();
+        var _dia = mañana.getDate();
+        _mes = _mes + 1;
+        var mes = "";
+        var dia = "";
+        if (_mes < 10) {
+            mes = "0" + _mes;
+        } else {
+            mes = _mes.toString();
+        }
+        if (_dia < 10) {
+            dia = "0" + _dia;
+        } else {
+            dia = _dia;
+        }
+
+        var fecha = anio + "-" + mes + "-" + dia;
+        tomorrow = fecha
+        console.log(fecha);
+    }
+
     onMount(()=>{
         getGroup()
+        listenerValidity()
+        dateToday()
     })
 </script>
 
@@ -351,27 +602,74 @@
                                     <div class="row g-2">
                                         <div class="col-12">
                                             <label class="form-label" for="gname">
-                                                <i class="fa fa-heading"></i> Grupo
+                                                <i class="fa fa-heading"></i> Nombre
                                             </label>
-                                            <input bind:this="{elementName}" class="form-control" type="text" id="gname" autocomplete="off" placeholder="Grupo">
+                                            <input 
+                                                bind:this="{elementName}" 
+                                                class="form-control" 
+                                                type="text" 
+                                                id="gname" 
+                                                autocomplete="off" 
+                                                placeholder="Grupo"
+                                            >
+                                            {#each fbName as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                         <div class="col-sm-6 col-md-12 col-lg-6">
                                             <label class="form-label" for="gmin">
                                                 <i class="fa fa-users"></i> Mínimo de integrantes
                                             </label>
-                                            <input bind:this="{elementMin}" class="form-control" type="text" id="gmin" autocomplete="off" placeholder="Mínimo de integrantes">
+                                            <input 
+                                                bind:this="{elementMin}" 
+                                                class="form-control" 
+                                                type="number" 
+                                                id="gmin" 
+                                                autocomplete="off" 
+                                                placeholder="Mínimo de integrantes"
+                                            >
+                                            {#each fbMin as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                         <div class="col-sm-6 col-md-12 col-lg-6">
                                             <label class="form-label" for="gmax">
                                                 <i class="fa fa-users"></i> Máximo de integrantes
                                             </label>
-                                            <input bind:this="{elementMax}" class="form-control" type="text" id="gmax" autocomplete="off" placeholder="Máximo de integrantes">
+                                            <input 
+                                                bind:this="{elementMax}" 
+                                                class="form-control" 
+                                                type="text" id="gmax" 
+                                                autocomplete="off" 
+                                                placeholder="Máximo de integrantes"
+                                            >
+                                            {#each fbMax as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gschedule">
                                                 <i class="fa fa-clock"></i> Horario
                                             </label>
-                                            <input bind:this="{elementSchedule}" class="form-control" type="text" id="gschedule" autocomplete="off" placeholder="Horario">
+                                            <input 
+                                                bind:this="{elementSchedule}" 
+                                                class="form-control" 
+                                                type="text" 
+                                                id="gschedule" 
+                                                autocomplete="off" 
+                                                placeholder="Horario"
+                                            >
+                                            {#each fbSchedule as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                     </div>
                                 </div>
@@ -381,19 +679,52 @@
                                             <label class="form-label" for="gclosedate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha límite de inscripción
                                             </label>
-                                            <input bind:this="{elementClosingDate}" class="form-control" type="date" id="gclosedate">
+                                            <input 
+                                                bind:this="{elementClosingDate}" 
+                                                class="form-control" 
+                                                type="date" 
+                                                id="gclosedate"
+                                                min="{today}"
+                                            >
+                                            {#each fbClosingDate as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gstartdate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha inicio
                                             </label>
-                                            <input bind:this="{elementStartDate}" class="form-control" type="date" id="gstartdate">
+                                            <input 
+                                                bind:this="{elementStartDate}" 
+                                                class="form-control" 
+                                                type="date" 
+                                                min = "{tomorrow}"
+                                                id="gstartdate"
+                                            >
+                                            {#each fbStartDate as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                         <div class="col-12">
                                             <label class="form-label" for="gfinishdate">
                                                 <i class="fa fa-calendar-alt"></i> Fecha fin
                                             </label>
-                                            <input bind:this="{elementFinalDate}" class="form-control" type="date" id="gfinishdate">
+                                            <input 
+                                                bind:this="{elementFinalDate}" 
+                                                class="form-control" 
+                                                type="date" 
+                                                min="{tomorrow}"
+                                                id="gfinishdate"
+                                            >
+                                            {#each fbFinalDate as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
                                         </div>
                                     </div>
                                 </div>

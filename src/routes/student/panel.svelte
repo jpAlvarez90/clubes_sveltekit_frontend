@@ -80,6 +80,19 @@
         let elementClass = "form-control"
         isEdit = !isEdit
 
+        elementName.value = ''
+        elementName.className = elementClass
+        fbName = []
+
+        elementLastname.value = ''
+        elementLastname.className = elementClass
+        fbLastname = []
+
+        elementSecondLastname.value = ''
+        elementSecondLastname.className = elementClass
+        fbSecondLastname = []
+
+        getProfile()
     }
 
     const clearPassword = ()=>{
@@ -465,9 +478,9 @@
 
     const checkProfileValidity = ()=>{
         let ok = true
-        // ok = validName(elementName) && ok
-        // ok = validLastname(elementLastname) && ok
-        // ok = validSecondLastname(elementSecondLastname) && ok
+        ok = validName(elementName) && ok
+        ok = validLastname(elementLastname) && ok
+        ok = validSecondLastname(elementSecondLastname) && ok
         // ok = validEmail(elementEmail) && ok
         // ok = validPersonalEmail(elementPersonalEmail) && ok
         // ok = validPhone(elementPhone) && ok
@@ -475,16 +488,17 @@
 
         if(ok){
             updateProfile()
+            console.log('ok');
             btnclearprofile.click()
         }
     }
 
 	const listenerValidity = ()=>{
         // Datos generales
-		/*elementName.addEventListener('input',(e)=>{validName(e.target)})
+		elementName.addEventListener('input',(e)=>{validName(e.target)})
 		elementLastname.addEventListener('input',(e)=>{validLastname(e.target)})
 		elementSecondLastname.addEventListener('input',(e)=>{validSecondLastname(e.target)})
-		elementEmail.addEventListener('input',(e)=>{validEmail(e.target)})
+		/*elementEmail.addEventListener('input',(e)=>{validEmail(e.target)})
 		elementPersonalEmail.addEventListener('input',async(e)=>{validPersonalEmail(e.target)})
 		elementPhone.addEventListener('input',async(e)=>{validPhone(e.target)})
 		elementCellphone.addEventListener('input',async(e)=>{validCellphone(e.target)})*/
@@ -504,6 +518,7 @@
         if(user && user['idUser']){
             axiosapi.doGet(`/student/get/profile/${user['idUser']}`).then(res=>{
                 student = res.data
+                console.log(student);
                 getGroups(student.id)
             }).catch(err=>{
                 swal.err()
@@ -537,26 +552,40 @@
     }
 
     const updateProfile = ()=>{
-        let user = JSON.parse(localStorage.getItem('user')!=null?localStorage.getItem('user'):"{}")
-        let data = {
-            id_user: user['idUser'],
-            name: elementName.value,
-            first_last_name: elementLastname.value,
-            second_last_name: elementSecondLastname.value,
-            email: elementEmail.value,
-            personal_email: elementPersonalEmail.value,
-            phone: elementPhone.value,
-            cellphone: elementCellphone.value
+        // let user = JSON.parse(localStorage.getItem('user')!=null?localStorage.getItem('user'):"{}")
+        // let data = {
+        //     id_user: user['idUser'],
+        //     name: elementName.value,
+        //     first_last_name: elementLastname.value,
+        //     second_last_name: elementSecondLastname.value,
+        //     email: elementEmail.value,
+        //     personal_email: elementPersonalEmail.value,
+        //     phone: elementPhone.value,
+        //     cellphone: elementCellphone.value
+        // }
+
+        // if(data.id_user){
+        //     axiosapi.doPut(`/student/profile/update`,data).then(res=>{
+        //         swal.con('success',TITUPDATED,TXTUPDATED)
+        //         getProfile()
+        //     }).catch(err=>{
+        //         swal.err()
+        //     })
+        // }
+
+        let obj = {
+            id : student.id,
+            name : student.name,
+            first_last_name : student.first_last_name,
+            second_last_name: student.second_last_name
         }
 
-        if(data.id_user){
-            axiosapi.doPut(`/student/profile/update`,data).then(res=>{
-                swal.con('success',TITUPDATED,TXTUPDATED)
-                getProfile()
-            }).catch(err=>{
-                swal.err()
-            })
-        }
+        axiosapi.doPut(`/student/profile/update`,obj).then((res)=>{
+            swal.con('success',TITUPDATED,TXTUPDATED)
+            getProfile()
+        }).catch((err)=>{
+            swal.err()
+        })
         
     }
 
@@ -690,7 +719,7 @@
                         <div id="collap2" class="collapse multi-collapse ck-1">
                             <form on:submit="{(e)=>{e.preventDefault();checkProfileValidity()}}">
                                 <div class="container">
-                                    <div class="row g-3 mb-3">
+                                    <!-- <div class="row g-3 mb-3">
                                         <div class="col-md-6">
                                             <label for="name" class="form-label">
                                                 <i class="fa fa-user"></i> Nombre
@@ -840,7 +869,89 @@
                                                 <i class="fa fa-save"></i> Guardar
                                             </button>
                                         </div>
+                                    </div> -->
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-12">
+                                            <label for="name" class="form-label">
+                                                <i class="fa fa-user"></i> Nombre
+                                            </label>
+                                            <input 
+                                                bind:this="{elementName}" 
+                                                bind:value="{student.name}"
+                                                autocomplete="off" 
+                                                class="form-control" 
+                                                type="text" 
+                                                id="name" 
+                                                placeholder="Nombre">
+                                            {#each fbName as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
+                                        </div>
                                     </div>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-12">
+                                            <label for="lastname" class="form-label">
+                                                <i class="fa fa-user"></i> Primer apellido
+                                            </label>
+                                            <input 
+                                                bind:this="{elementLastname}" 
+                                                bind:value="{student.first_last_name}"
+                                                autocomplete="off" 
+                                                class="form-control" 
+                                                type="text" 
+                                                id="lastname" 
+                                                placeholder="Primer apellido">
+                                            {#each fbLastname as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    </div>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-12">
+                                            <label for="second_lastname" class="form-label">
+                                                <i class="fa fa-user"></i> Segundo apellido
+                                            </label>
+                                            <input 
+                                                bind:this="{elementSecondLastname}" 
+                                                bind:value="{student.second_last_name}"
+                                                autocomplete="off" 
+                                                class="form-control" 
+                                                type="text" 
+                                                id="second_lastname" 
+                                                placeholder="Segundo apellido">
+                                            {#each fbSecondLastname as item}
+                                                <div class="invalid-feedback">
+                                                    {item}
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <button 
+                                                bind:this="{btnclearprofile}" 
+                                                type="button" 
+                                                on:click="{()=>{clearProfile(); getProfile()}}" 
+                                                class="btn btn-secondary w-100" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target=".ck-1" 
+                                                aria-expanded="false" 
+                                                aria-controls="collap1 collap2">
+                                                <i class="fa fa-times"></i> Cancelar
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fa fa-save"></i> Guardar
+                                            </button>
+                                        </div>
+                                    </div> 
                                 </div>
                             </form>
                         </div>

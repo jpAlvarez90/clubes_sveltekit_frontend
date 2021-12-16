@@ -61,6 +61,7 @@
     let elementConfirmNewPassword
     let fbConfirmNewPassword = []
 
+    // GRUPO
     let elementGName
     let fbGName = []
     let elementGMin
@@ -76,10 +77,18 @@
     let elementGFinalDate
     let fbGFinalDate = []
 
+    let today = ''
+    let tomorrow = ''
+
 	let verifyEmailExistence = true
 	let verifyEmailUserExistence = true
 	let verifyCellphoneExistence = true
 	let verifyPhoneExistence = true
+
+    let emailU = ''
+	let personalEmailU = ''
+	let phoneU = ''
+	let cellphoneU = ''
 
     const clearProfile = ()=>{
         let elementClass = "form-control"
@@ -106,6 +115,12 @@
         elementCellphone.value = instructor.cellphone
         elementCellphone.className = elementClass
         fbCellphone = []
+
+        verifyEmailExistence = true
+        verifyEmailUserExistence = true
+        verifyCellphoneExistence = true
+        verifyPhoneExistence = true
+        
     }
 
     const clearPassword = ()=>{
@@ -128,7 +143,38 @@
     }
 
     const clearGroup = ()=>{
+        let elementClass = "form-control"
 
+        elementGName.value = ''
+        elementGName.className = elementClass
+        fbGName = []
+
+        elementGMin.value = ''
+        elementGMin.className = elementClass
+        fbGMin = []
+
+        elementGMax.value = ''
+        elementGMax.className = elementClass
+        fbGMax = []
+
+        elementGSchedule.value = ''
+        elementGSchedule.className = elementClass
+        fbGSchedule = []
+
+        elementGCloseDate.value = ''
+        elementGCloseDate.className = elementClass
+        fbGCloseDate = []
+
+        elementGStartDate.value = ''
+        elementGStartDate.className = elementClass
+        fbGStartDate = []
+
+        elementGFinalDate.value = ''
+        elementGFinalDate.className = elementClass
+        fbGFinalDate = []
+
+        elementGStartDate.disabled = true
+        elementGFinalDate.disabled = true
     }
 
 	const validName = (target)=>{
@@ -226,21 +272,24 @@
 			fbEmail.push("El correo electrónico debe pertenecer al dominio @utez.edu.mx.")
 		}
 
-		/*if(v){
-			const resp = await axiosapi.doGet('/user/verify/email/existence/'+ v).then((res)=>{
-				return res.data
-			}).catch(() => {
-				swal.err()
-			})
+        console.log(emailU);
+		if(v.toLowerCase() != emailU.toLowerCase()){
+			if(v){
+				const resp = await axiosapi.doGet('/user/verify/email/existence/'+ v).then((res)=>{
+					return res.data
+				}).catch(() => {
+					swal.err()
+				})
 
-			if(resp > 0){
+				if(resp > 0){
+					validated = false
+					target.className = `${elementClass} is-invalid`
+					verifyEmailUserExistence = false
+				}
+			}else{
 				validated = false
-				target.className = `${elementClass} is-invalid`
-				verifyEmailUserExistence = false
 			}
-		}else{
-			validated = false
-		}*/
+		}
         
 
 		return validated
@@ -267,26 +316,28 @@
 			fbPersonalEmail.push("El correo electrónico es demasiado largo.")
 		}
 
-		/*if(v){
-			let obj = {
-				flag : "email",
-				data: v
-			}
+        if(v.toLowerCase() != personalEmailU.toLowerCase()){
+            if(v){
+                let obj = {
+                    flag : "email",
+                    data: v
+                }
 
-			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
-				return res.data
-			}).catch(() => {
-				swal.err()
-			})
+                const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+                    return res.data
+                }).catch(() => {
+                    swal.err()
+                })
 
-			if(resp > 0){
-				validated = false
-				target.className = `${elementClass} is-invalid`
-				verifyEmailExistence = false
-			}
-		}else{
-			validated = false
-		}*/
+                if(resp > 0){
+                    validated = false
+                    target.className = `${elementClass} is-invalid`
+                    verifyEmailExistence = false
+                }
+            }else{
+                validated = false
+            }
+        }
 
 		return validated
 	}
@@ -312,26 +363,28 @@
 			fbPhone.push("El número telefónico es demasiado largo.")
 		}
 
-		/*if(v){
-			let obj = {
-				flag : "phone",
-				data: v
-			}
+        if(v != phoneU){
+            if(v){
+                let obj = {
+                    flag : "phone",
+                    data: v
+                }
 
-			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
-				return res.data
-			}).catch(() => {
-				swal.err()
-			})
+                const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+                    return res.data
+                }).catch(() => {
+                    swal.err()
+                })
 
-			if(resp > 0){
-				validated = false
-				target.className = `${elementClass} is-invalid`
-				verifyPhoneExistence = false
-			}
-		}else{
-			validated = false
-		}*/
+                if(resp > 0){
+                    validated = false
+                    target.className = `${elementClass} is-invalid`
+                    verifyPhoneExistence = false
+                }
+            }else{
+                validated = false
+            }
+        }
 
 		return validated
 	}
@@ -357,26 +410,30 @@
 			fbCellphone.push("El número telefónico es demasiado largo (más de 20 caracteres).")
 		}
 
-		/*if(v){
-			let obj = {
-				flag : "cellphone",
-				data: v
-			}
+        if(v != cellphoneU){
+            if(v){
+                let obj = {
+                    flag : "cellphone",
+                    data: v
+                }
 
-			const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
-				return res.data
-			}).catch(() => {
-				swal.err()
-			})
+                const resp = await axiosapi.doPost('/instructor/verify/existence', obj).then((res)=>{
+                    return res.data
+                }).catch(() => {
+                    swal.err()
+                })
 
-			if(resp > 0){
-				validated = false
-				target.className = `${elementClass} is-invalid`
-				verifyCellphoneExistence = false
-			}
-		}else{
-			validated = false
-		}*/
+                if(resp > 0){
+                    validated = false
+                    target.className = `${elementClass} is-invalid`
+                    verifyCellphoneExistence = false
+                }
+            }else{
+                validated = false
+            }
+        }
+
+		
 
 		return validated
 	}
@@ -480,6 +537,193 @@
         return validated
     }
 
+    // GRUPO
+    const validNameG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGName = []
+		target.className = `${elementClass} is-valid`
+
+		// Formato de nombre válido
+		let nameformat = /^([A-ZÁÉÍÓÚÑa-zñáéíóú]+[\s]*)+$/
+		if(!nameformat.test(v)){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGName.push("El nombre no debe contener números o caracteres especiales, y debe empezar con mayúscula.")
+		}
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGName.push("Completar el campo.")
+        }
+		if(v.length > 50){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGName.push("El nombre debe contener máximo 50 caracteres.")
+		}
+		
+		return validated
+    }
+
+    const validMinG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGMin = []
+		target.className = `${elementClass} is-valid`
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGMin.push("Completar el campo.")
+        }
+        validMaxG(elementGMax)
+        // if(elementGMax.value != '' ){
+        //     if(parseInt(v) >= elementGMax.value){
+        //         validated = false
+        //         target.className = `${elementClass} is-invalid`
+        //         fbGMin.push("El mínimo de integrantes debe ser menor al máximo de integrantes.")
+        //     }
+
+        //     validMaxG(elementGMax)
+        // }
+		
+		return validated
+    }
+
+    const validMaxG = (target) => {
+        let validated = true
+        let v = target.value
+        let elementClass = "form-control"
+        fbGMax = []
+        target.className = `${elementClass} is-valid`
+        console.log(typeof(v));
+        if(!v){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGMax.push("Completar el campo.")
+        }
+
+        if(elementGMin.value != '' ){
+            if(parseInt(v) < elementGMin.value){
+                validated = false
+                target.className = `${elementClass} is-invalid`
+                fbGMax.push("El máximo de integrantes debe ser mayor al mínimo de integrantes.")
+            }
+        }
+
+        return validated
+    }
+
+    const validScheduleG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGSchedule = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v || v == ' '){
+            validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGSchedule.push("Completar el campo.")
+        }
+		if(v.length < 3 || v.length > 50){
+			validated = false
+			target.className = `${elementClass} is-invalid`
+			fbGSchedule.push("El horario debe contener de 3 a 50 caracteres.")
+		}
+		
+		return validated
+    }
+
+    const validCloseDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGCloseDate = []
+		target.className = `${elementClass} is-valid`
+        dateTomorrow(v)
+
+        if(!v){
+            console.log('es menor');
+            validated = false
+            elementGStartDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbGCloseDate.push("Seleccione una fecha.")
+        }else{
+            if(v < today){
+                validated = false
+                elementGStartDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbGCloseDate.push("La fecha no puede ser atrasada.")
+            }else{
+                elementGStartDate.disabled = false
+            }
+        }
+		
+		return validated
+    }
+
+    const validStartDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGStartDate = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v){
+            validated = false
+            elementGFinalDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbGStartDate.push("Seleccione una fecha.")
+        }else{
+            if(v < tomorrow){
+                validated = false
+                elementGFinalDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbGStartDate.push("La fecha debe ser mayor a la fecha límite de inscripción.")
+            }else{
+                elementGFinalDate.disabled = false
+            }
+        }
+        
+		return validated
+    }
+
+    const validFinalDateG = (target) => {
+        let validated = true
+		let v = target.value
+		let elementClass = "form-control"
+		fbGFinalDate = []
+		target.className = `${elementClass} is-valid`
+
+        if(!v){
+            validated = false
+            elementGFinalDate.disabled = true
+            target.className = `${elementClass} is-invalid`
+            fbGFinalDate.push("Seleccione una fecha.")
+        }else{
+            if(v < tomorrow){
+                validated = false
+                elementGFinalDate.disabled = true
+                target.className = `${elementClass} is-invalid`
+                fbGFinalDate.push("La fecha debe ser mayor a la fecha límite de inscripción.")
+            }else{
+                elementGFinalDate.disabled = false
+            }
+
+            if(v < elementGStartDate.value){
+                validated = false
+                target.className = `${elementClass} is-invalid`
+                fbGFinalDate.push("La fecha debe ser mayor a la fecha de inicio.")
+            }
+        }
+		
+		return validated
+    }
+
+
+
     const checkPasswordValidity = ()=>{
         let ok = true
         ok = validCurrentPassword(elementCurrentPassword) && ok
@@ -511,8 +755,16 @@
 
     const checkGroupValidation = ()=>{
         let ok = true;
+        ok = validNameG(elementGName) && ok
+        ok = validMinG(elementGMin) && ok
+        ok = validMaxG(elementGMax) && ok
+        ok = validScheduleG(elementGSchedule) && ok
+        ok = validCloseDateG(elementGCloseDate) && ok
+        ok = validStartDateG(elementGStartDate) && ok
+        ok = validFinalDateG(elementGFinalDate) && ok
 
         if(ok){
+            console.log('ok');
             saveGroup()
             closemodalcreate.click()
         }
@@ -553,6 +805,14 @@
         elementNewPassword.addEventListener('input',(e)=>{validNewPassword(e.target)})
         elementConfirmNewPassword.addEventListener('input',(e)=>{validConfirmNewPassword(e.target)})
 
+        // Grupos
+        elementGName.addEventListener('input', (e) => {validNameG(e.target)})
+        elementGMin.addEventListener('input', (e) => {validMinG(e.target)})
+        elementGMax.addEventListener('input', (e) => {validMaxG(e.target)})
+        elementGSchedule.addEventListener('input', (e) => {validScheduleG(e.target)})
+        elementGCloseDate.addEventListener('input', (e) => {validCloseDateG(e.target)})
+        elementGStartDate.addEventListener('input', (e) => {validStartDateG(e.target)})
+        elementGFinalDate.addEventListener('input', (e) => {validFinalDateG(e.target)})
 
 	}
 
@@ -595,6 +855,10 @@
         if(user && user['idUser']){
             axiosapi.doGet(`/instructor/profile/${user['idUser']}`).then(res=>{
                 instructor = res.data['instructor']
+                emailU = res.data['instructor'].email
+                personalEmailU = res.data['instructor'].personal_email
+                phoneU = res.data['instructor'].phone
+                cellphoneU = res.data['instructor'].cellphone
                 workshops = res.data['workshops']
             }).catch(err=>{
                 swal.err()
@@ -644,9 +908,63 @@
         }
     }
 
+    const dateToday = () => {
+      var f = new Date();
+
+      var anio = f.getFullYear();
+      var _mes = f.getMonth();
+      var _dia = f.getDate();
+      _mes = _mes + 1;
+      var mes = "";
+      var dia = "";
+      if (_mes < 10) {
+        mes = "0" + _mes;
+      } else {
+        mes = _mes.toString();
+      }
+      if (_dia < 10) {
+        dia = "0" + _dia;
+      } else {
+        dia = _dia;
+      }
+
+      var fecha = anio + "-" + mes + "-" + dia;
+      console.log(fecha);
+      today = fecha;
+      dateTomorrow(fecha)
+    }
+
+    const dateTomorrow = (date) => {
+        const hoy = new Date(date)
+        const mañana = new Date(hoy)
+        mañana.setDate(mañana.getDate() + 2)
+
+        var anio = mañana.getFullYear();
+        var _mes = mañana.getMonth();
+        var _dia = mañana.getDate();
+        _mes = _mes + 1;
+        var mes = "";
+        var dia = "";
+        if (_mes < 10) {
+            mes = "0" + _mes;
+        } else {
+            mes = _mes.toString();
+        }
+        if (_dia < 10) {
+            dia = "0" + _dia;
+        } else {
+            dia = _dia;
+        }
+
+        var fecha = anio + "-" + mes + "-" + dia;
+        tomorrow = fecha
+        console.log(fecha);
+    }
+
     onMount(()=>{
         listenerValidity()
         getProfile()
+        dateToday()
     })
 
 </script>
@@ -825,7 +1143,7 @@
                                             {/each}
                                             {#if !verifyPhoneExistence}
                                                 <div class="invalid-feedback">
-                                                    Correo electrónico en uso.
+                                                    Teléfono fijo en uso.
                                                 </div>
                                             {/if}
                                         </div>
@@ -841,7 +1159,7 @@
                                             {/each}
                                             {#if !verifyCellphoneExistence}
                                                 <div class="invalid-feedback">
-                                                    Correo electrónico en uso.
+                                                    Teléfono celular en uso.
                                                 </div>
                                             {/if}
                                         </div>
@@ -1003,7 +1321,7 @@
 						<div class="row g-3">
 							<div class="col-12">
 								<label for="gname" class="form-label">
-									<i class="fas fa-users"></i> Nombre
+									<i class="fas fa-heading"></i> Nombre
 								</label>
 								<input
 									bind:this="{elementGName}"
@@ -1026,7 +1344,7 @@
 								<input
 									bind:this="{elementGMin}"
 									id="gmin"
-									type="text"
+									type="number"
 									class="form-control"
 									autocomplete="off"
 									placeholder="Mínimo de integrantes"
@@ -1044,10 +1362,10 @@
 								<input
 									bind:this="{elementGMax}"
 									id="gmax"
-									type="text"
+									type="number"
 									class="form-control"
 									autocomplete="off"
-									placeholder="Mínimo de integrantes"
+									placeholder="Máximo de integrantes"
 								/>
 								{#each fbGMax as item}
 									<div class="invalid-feedback">
@@ -1082,6 +1400,7 @@
 									id="gclosedate"
 									type="date"
 									class="form-control"
+                                    min="{today}"
 									autocomplete="off"
 								/>
 								{#each fbGCloseDate as item}
@@ -1098,7 +1417,9 @@
 									bind:this="{elementGStartDate}"
 									id="gstartdate"
 									type="date"
+                                    min="{tomorrow}"
 									class="form-control"
+                                    disabled
 									autocomplete="off"
 								/>
 								{#each fbGStartDate as item}
@@ -1115,6 +1436,8 @@
 									bind:this="{elementGFinalDate}"
 									id="gfinaldate"
 									type="date"
+                                    min="{tomorrow}"
+                                    disabled
 									class="form-control"
 									autocomplete="off"
 								/>
