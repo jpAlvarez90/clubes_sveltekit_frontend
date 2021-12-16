@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte'
+	import { goto } from '$app/navigation';
 	import Notrecords from './../../../components/notrecords.svelte'
 	import axiosapi from './../../../utils/axiosapi'
     import swal from './../../../utils/sweetalert2'
@@ -930,13 +931,13 @@
 		elementPhone.addEventListener('input',async(e)=>{validPhone(e.target)})
 		elementCellphone.addEventListener('input',async(e)=>{validCellphone(e.target)})
 
-		elementNameU.addEventListener('input',(e)=>{validNameU(e.target)})
-		elementLastNameU.addEventListener('input',(e)=>{validLastnameU(e.target)})
-		elementSecondLastNameU.addEventListener('input',(e)=>{validSecondLastnameU(e.target)})
-		elementEmailU.addEventListener('input',(e)=>{validEmailU(e.target)})
-		elementPersonalEmailU.addEventListener('input',async(e)=>{validPersonalEmailU(e.target)})
-		elementPhoneU.addEventListener('input',async(e)=>{validPhoneU(e.target)})
-		elementCellphoneU.addEventListener('input',async(e)=>{validCellphoneU(e.target)})
+		// elementNameU.addEventListener('input',(e)=>{validNameU(e.target)})
+		// elementLastNameU.addEventListener('input',(e)=>{validLastnameU(e.target)})
+		// elementSecondLastNameU.addEventListener('input',(e)=>{validSecondLastnameU(e.target)})
+		// elementEmailU.addEventListener('input',(e)=>{validEmailU(e.target)})
+		// elementPersonalEmailU.addEventListener('input',async(e)=>{validPersonalEmailU(e.target)})
+		// elementPhoneU.addEventListener('input',async(e)=>{validPhoneU(e.target)})
+		// elementCellphoneU.addEventListener('input',async(e)=>{validCellphoneU(e.target)})
 	}
 
 	onMount(()=>{
@@ -1016,7 +1017,10 @@
                                 <td>{ins.second_last_name}</td>
 								<td>
 									<div class="btn-group" role="group">
-										<button on:click="{()=>getInstructor(ins.id)}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
+										<!-- <button on:click="{()=>getInstructor(ins.id)}" data-bs-toggle="modal" data-bs-target="#mo2" type="button" class="btn btn-outline-primary">
+											<i class="fas fa-eye"></i>
+										</button> -->
+										<button on:click="{()=>{goto(`/admin/instructores/perfil/${ins.id_user}`)}}" type="button" class="btn btn-outline-primary">
 											<i class="fas fa-eye"></i>
 										</button>
 										<button on:click="{()=>deleteInstructor(ins.id_user)}" type="button" class="btn btn-outline-danger">
@@ -1265,14 +1269,14 @@
 	<div class="modal fade" id="mo2" tabindex="-1" aria-labelledby="mol2" aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered">
 			<div class="modal-content">
-				<div class="modal-header">
+				<!-- <div class="modal-header">
 					<h5 class="modal-title" id="mol">
 						<i class="fas fa-edit" /> Instructor
 					</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-				</div>
+				</div> -->
 				<div class="modal-body">
-					<div class="col-lg-12 ms-2">
+					<!-- <div class="col-lg-12 ms-2">
 						<div id="collap1" class="collapse show multi-collapse ck-1 ck-2">
 								<div class="row text-sm-left text-md-start g-3 mb-3">
 									<div class="col-md-6 col-lg-4">
@@ -1516,6 +1520,307 @@
 								</div>
 							</form>
 						</div>
+					</div> -->
+					<nav>
+						<div class="nav nav-tabs" id="nav-tab">
+							<button 
+								class="nav-link active" 
+								id="nav-home-tab"
+								data-bs-toggle="tab"
+								data-bs-target="#nav-home"
+								type="button"
+								role="tab"
+								aria-controls="nav-home"
+								aria-selected="true"
+								>
+								Datos personales
+							</button>
+							<button
+								class="nav-link"
+								id="nav-profile-tab"
+								data-bs-toggle="tab"
+								data-bs-target="#nav-profile"
+								type="button"
+								role="tab"
+								aria-controls="nav-profile"
+								aria-selected="false"
+								>
+								Talleres
+							</button>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" 
+								style="
+								padding: 0.5rem 0.5rem;
+								margin: 8px -0.5rem -0.5rem auto"
+							/>
+						</div>
+					</nav>
+					<div class="tab-content" id="nav-tabContent">
+						<div
+							class="tab-pane fade show active"
+							id="nav-home"
+							role="tabpanel"
+							aria-labelledby="nav-home-tab"
+							style="padding: 20px 20px 0px 20px;">
+
+							<div class="col-lg-12 ms-2">
+								<div id="collap1" class="collapse show multi-collapse ck-1 ck-2">
+										<div class="row text-sm-left text-md-start g-3 mb-3">
+											<div class="col-md-6 col-lg-4">
+												<div class="fw-bold">
+													<i class="fa fa-user"></i> Nombre
+												</div>
+												<div>{oldinstructor.name}</div>
+											</div>
+											<div class="col-md-6 col-lg-4">
+												<div class="fw-bold">
+													<i class="fa fa-user"></i> Primer apellido
+												</div>
+												<div>{oldinstructor.first_last_name}</div>
+											</div>
+											<div class="col-md-12 col-lg-4">
+												<div class="fw-bold">
+													<i class="fa fa-user"></i> Segundo apellido
+												</div>
+												<div>{oldinstructor.second_last_name}</div>
+											</div>
+										</div>
+										<hr>
+										<div class="row text-sm-left text-md-start g-3 mb-3">
+											<div class="col-md-6">
+												<div class="fw-bold">
+													<i class="fa fa-envelope"></i> Correo electrónico institucional
+												</div>
+												<div>{oldinstructor.email}</div>
+											</div>
+											<div class="col-md-6">
+												<div class="fw-bold">
+													<i class="fa fa-envelope"></i> Correo electrónico personal
+												</div>
+												<div>{oldinstructor.personal_email}</div>
+											</div>
+										</div>
+										<hr>
+										<div class="row text-sm-left text-md-start g-3 mb-3">
+											<div class="col-md-6">
+												<div class="fw-bold">
+													<i class="fa fa-phone"></i> Teléfono fijo
+												</div>
+												<div>7771234567</div>
+											</div>
+											<div class="col-md-6">
+												<div class="fw-bold">
+													<i class="fa fa-phone"></i> Teléfono celular
+												</div>
+												<div>7771364829</div>
+											</div>
+										</div>
+									
+									<div class="modal-footer mb-0 pb-0 pe-0">
+										<button type="button" class="btn btn-secondary" bind:this="{closemodalupdate}"  data-bs-dismiss="modal"
+											><i class="fas fa-times" /> Cerrar</button
+										>
+										<button type="submit" class="btn btn-primary" data-bs-toggle="collapse" data-bs-target=".ck-1" aria-expanded="false" aria-controls="collap1 collap2">
+											<i class="fas fa-edit" /> Editar</button>
+									</div>
+								</div>
+								<div id="collap2" class="collapse multi-collapse ck-1">
+									<form on:submit="{(e) => {e.preventDefault();checkUpdateValidation()}}">
+										<div class="container">
+											
+											<div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3">
+												<div class="col-md-4">
+													<label for="nameU" class="form-label">
+														<i class="fas fa-user" /> Nombre
+													</label>
+													<input
+														bind:value="{oldinstructor.name}"
+														bind:this="{elementNameU}"
+														id="nameU"
+														placeholder="Ingresa tu nombre"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbNameU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+												</div>
+												<div class="col-md-4">
+													<label for="firstlastnameU" class="form-label">
+														<i class="fas fa-user" /> Primer apellido
+													</label>
+													<input
+														bind:value="{oldinstructor.first_last_name}"
+														bind:this="{elementLastNameU}"
+														id="firstlastnameU"
+														placeholder="Ingresa tu primer apellido"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbLastNameU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+												</div>
+												<div class="col-md-4">
+													<label for="secondlastnameU" class="form-label">
+														<i class="fas fa-user" /> Segundo apellido
+													</label>
+													<input
+														bind:value="{oldinstructor.second_last_name}"
+														bind:this="{elementSecondLastNameU}"
+														id="secondlastnameU"
+														placeholder="Ingresa tu segundo apellido"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbSecondLastNameU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+												</div>
+											</div>
+											<div class="row g-3 mb-3">
+												<div class="col-md-6">
+													<label for="emailU" class="form-label">
+														<i class="fas fa-envelope" /> Correo electrónico institucional
+													</label>
+													<input
+														bind:value="{oldinstructor.email}"
+														bind:this="{elementEmailU}"
+														id="emailU"
+														placeholder="Ingresa tu correo electrónico institucional"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbEmailU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+													{#if !verifyEmailUserExistenceU}
+													<div class="invalid-feedback">
+														Correo electrónico en uso.
+													</div>
+													{/if}
+												</div>
+												<div class="col-md-6">
+													<label for="personalemailU" class="form-label">
+														<i class="fas fa-envelope" /> Correo electrónico personal
+													</label>
+													<input
+														bind:value="{oldinstructor.personal_email}"
+														bind:this="{elementPersonalEmailU}"
+														id="personalemailU"
+														placeholder=" Ingresa tu correo electrónico personal"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbPersonalEmailU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+													{#if !verifyEmailExistenceU}
+													<div class="invalid-feedback">
+														Correo electrónico en uso.
+													</div>
+													{/if}
+												</div>
+											</div>
+											<div class="row g-3 mb-3">
+												<div class="col-md-6">
+													<label for="phoneU" class="form-label">
+														<i class="fas fa-phone" /> Teléfono fijo
+													</label>
+													<input
+														bind:value="{oldinstructor.phone}"
+														bind:this="{elementPhoneU}"
+														id="phoneU"
+														placeholder="Ingresa tu teléfono fijo"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbPhoneU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+					
+													{#if !verifyPhoneExistenceU}
+														<div class="invalid-feedback">
+															Teléfono fijo en uso.
+														</div>
+													{/if}
+												</div>
+												<div class="col-md-6">
+													<label for="cellphoneU" class="form-label">
+														<i class="fas fa-phone" /> Teléfono móvil
+													</label>
+													<input
+														bind:value="{oldinstructor.cellphone}"
+														bind:this="{elementCellphoneU}"
+														id="cellphoneU"
+														placeholder="Ingresa tu teléfono móvil"
+														type="text"
+														class="form-control"
+														autocomplete="off"
+													/>
+													{#each fbCellphoneU as item}
+														<div class="invalid-feedback">
+															{item}
+														</div>
+													{/each}
+													{#if !verifyCellphoneExistenceU}
+														<div class="invalid-feedback">
+															Teléfono móvil en uso.
+														</div>
+													{/if}
+												</div>
+											</div>
+										</div>
+										
+										<div class="modal-footer mb-0 pb-0 pe-0">
+											<button 
+												type="button" 
+												on:click="{() => {clearU()}}"
+												bind:this="{btnBack}" 
+												class="btn btn-secondary" 
+												data-bs-toggle="collapse" 
+												data-bs-target=".ck-1" 
+												aria-expanded="false" 
+												aria-controls="collap1 collap2">
+												<i class="fas fa-times" /> Cancelar
+											</button>
+											<button type="submit" class="btn btn-primary" >
+												<i class="fas fa-save" /> Guardar</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						<div
+							class="tab-pane fade"
+							id="nav-profile"
+							role="tabpanel"
+							aria-labelledby="nav-profile-tab"
+							style="padding: 20px 20px 0px 20px;">
+							<div class="modal-footer mb-0 pb-0 pe-0">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+									><i class="fas fa-times" /> Cerrar</button
+								>
+							</div>
+						</div>	
 					</div>
 				</div>
 				
