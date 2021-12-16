@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import Notrecords from './../../../components/notrecords.svelte';
 	import axiosapi from './../../../utils/axiosapi';
 	import swal from './../../../utils/sweetalert2';
@@ -756,13 +757,16 @@
 										<td>{s.acronym_division}</td>
 										<td>
 											<div class="btn-group" role="group">
-												<button
+												<!-- <button
 													type="button"
 													on:click={() => getStudent(s.id)}
 													class="btn btn-outline-primary"
 													data-bs-toggle="modal" data-bs-target="#updateModal"
 												>
 													<i class="fas fa-eye" />
+												</button> -->
+												<button on:click="{()=>{goto(`/admin/alumnos/perfil/${s.id_user}`)}}" type="button" class="btn btn-outline-primary">
+													<i class="fas fa-eye"></i>
 												</button>
 												<button
 													type="button"
